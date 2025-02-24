@@ -2,10 +2,27 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0;
-  box-sizing: border-width;
-  text-align: center;
+  box-sizing: border-box;
 }
 
 li {
   list-style: none;
+}
+
+nav > ul {
+  display: flex;
+
+  justify-content: flex-end;
+  border: 2px solid pink;
+
+  > li {
+    padding: 1rem;
+  }
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  right: 0;
+  margin-left: auto;
 }
