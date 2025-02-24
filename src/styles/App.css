@@ -5,3 +5,7 @@
   box-sizing: border-width;
   text-align: center;
 }
+
+li {
+  list-style: none;
+}

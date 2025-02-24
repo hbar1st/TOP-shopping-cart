@@ -2,21 +2,21 @@ import { useState } from "react";
 import "../styles/App.css";
 import { Link } from "react-router-dom";
 
-function App() {
+function Shop() {
   return (
     <>
       <nav>
         <ul>
           <li>
-            <Link to="shop">Shop</Link>
+            <Link to="/">Home</Link>
           </li>
         </ul>
       </nav>
       <header>
-        <h1>Welcome to the randomest shopping experience ever!</h1>
+        <h1>Here we go!</h1>
       </header>
     </>
   );
 }
 
-export default App;
+export default Shop;
