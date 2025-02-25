@@ -16,7 +16,7 @@ nav > ul {
   display: flex;
 
   justify-content: flex-end;
-  border: 2px solid pink;
+  border-bottom: 2px solid pink;
 
   > li {
     padding: 1rem;
@@ -42,4 +42,24 @@ nav {
 
 .announce {
   font-size: 3rem;
+}
+
+a.active {
+  text-decoration: underline;
+}
+
+a > svg {
+  border: none;
+}
+
+a.active > svg {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
 }

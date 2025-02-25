@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../styles/App.css";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
 function Nav() {
@@ -8,18 +8,37 @@ function Nav() {
     <nav>
       <ul>
         <li>
-          <Link to="/">Home</Link>
+          <NavLink
+            to="/home"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            Home
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/shop">Shop</Link>
+          <NavLink
+            to="/shop"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            Shop
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/cart">
+          <NavLink
+            to="/cart"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
             <ShoppingCart color="white" size={24}></ShoppingCart>
             <span className="counter"></span>
-          </Link>
+          </NavLink>
         </li>
       </ul>
     </nav>
