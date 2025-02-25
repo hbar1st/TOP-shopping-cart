@@ -1,24 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../styles/App.css";
 
 import Nav from "./Nav.jsx";
 
 const useStoreProducts = () => {
+  const hasRunOnce = useRef(false);
   const [storeProducts, setStoreProducts] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => {
-        if (res.status >= 400) {
-          throw new Error("server error");
-        }
-        return res.json();
-      })
-      .then((json) => setStoreProducts(processStoreProducts(json)))
-      .catch((error) => setError(error))
-      .finally(() => setLoading(false));
+    console.log(hasRunOnce.current);
+    if (!hasRunOnce.current) {
+      fetch("https://fakestoreapi.com/products")
+        .then((res) => {
+          if (res.status >= 400) {
+            throw new Error("server error");
+          }
+          return res.json();
+        })
+        .then((json) => setStoreProducts(processStoreProducts(json)))
+        .then(() => console.log("re-running the fetch?"))
+        .catch((error) => setError(error))
+        .finally(() => {
+          hasRunOnce.current = true;
+          console.log("just set hasRunOnce to true");
+          setLoading(false);
+        });
+    }
   }, []);
 
   return { storeProducts, error, loading };
@@ -49,9 +58,20 @@ function processStoreProducts(json) {
 function Shop() {
   const { storeProducts, error, loading } = useStoreProducts();
 
-  if (loading) return <p>Gimme a minute to grab my bag...</p>;
-  if (error) return <p>Retail therapy aborted due to network error!</p>;
+  if (loading)
+    return (
+      <p className="centerV centerH announce">
+        Gimme a minute to grab my bag...
+      </p>
+    );
+  if (error)
+    return (
+      <p className="centerV centerH announce">
+        Retail therapy aborted due to network error!
+      </p>
+    );
 
+  //TODO display storeProducts in cards down there
   return (
     <>
       <Nav />
