@@ -35,14 +35,10 @@ function PosterSlider() {
   });
 
   return (
-    <div className="poster-frame" onClick={handleClick}>
+    <div className="poster-frame">
       <div className="poster-slider">{posterSpans}</div>
     </div>
   );
-}
-
-function handleClick() {
-  alert("You clicked me!");
 }
 
 export default PosterSlider;
