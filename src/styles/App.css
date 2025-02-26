@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Coiny&display=swap");
+
 * {
   padding: 0;
   margin: 0;
@@ -28,6 +30,8 @@ nav {
   top: 0;
   right: 0;
   margin-left: auto;
+  justify-content: space-between;
+  display: flex;
 }
 
 .centerH {
@@ -46,20 +50,32 @@ nav {
 
 a.active {
   text-decoration: underline;
+
+  color: #64fcff;
 }
 
 a > svg {
   border: none;
+  color: white;
 }
 
 a.active > svg {
   border-bottom-width: 1px;
   border-bottom-style: solid;
+  stroke: #64fcff;
+  color: #64fcff;
 }
 
 main {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 1rem;
+}
+
+#logo {
+  font-family: "Coiny", fantasy;
+  padding: 10px;
+  font-size: 2rem;
 }

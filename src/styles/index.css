@@ -15,9 +15,10 @@
 
 a {
   font-weight: 500;
-  color: #64fcff;
+  color: white;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #ff64f2;
 }
@@ -30,7 +31,8 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: calc(1em + 3vw);
+
   line-height: 1.1;
 }
 

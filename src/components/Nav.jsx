@@ -6,6 +6,7 @@ import { ShoppingCart } from "lucide-react";
 function Nav() {
   return (
     <nav>
+      <p id="logo">hanazon</p>
       <ul>
         <li>
           <NavLink

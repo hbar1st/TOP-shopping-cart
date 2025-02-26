@@ -1,10 +1,14 @@
 import "../styles/App.css";
+import PosterSlider from "./PosterSlider.jsx";
 
 function Home() {
   return (
-    <header>
-      <h1>Welcome to the randomest shopping experience ever!</h1>
-    </header>
+    <>
+      <header>
+        <h1>Welcome to Hanazon! The randomest shopping experience ever!</h1>
+      </header>
+      <PosterSlider />
+    </>
   );
 }
 

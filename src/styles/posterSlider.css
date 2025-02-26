@@ -1,0 +1,106 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: content-box;
+}
+
+:root {
+  --poster-height: 300px;
+  --aspect-ratio: 2 / 3;
+  --poster-width: clamp(300px, 350px, min(300px, 50vw));
+  --slider-margin: max(10px, 1vh) auto max(15px, 1vh) auto;
+  --slider-border: max(5px, 1vw) solid rgb(58, 71, 73);
+  --navigation-ball-background: linear-gradient(
+    235deg,
+    white 0%,
+    rgb(220, 198, 220) 10%,
+    rgb(192, 133, 203) 30%,
+    rgb(78, 17, 87) 90%,
+    rgb(52, 8, 59) 100%
+  );
+  --nav-border-left-color: rgb(52, 8, 59);
+  --nav-border-bottom-color: rgb(52, 8, 59);
+  --nav-border-top-color: rgb(173, 145, 179);
+  --nav-border-right-color: rgb(192, 133, 203);
+  --nav-button-hover-color: blue;
+  --nav-button-background-color: white;
+}
+
+.poster-frame {
+  margin: var(--slider-margin);
+  width: min-content;
+  border-radius: 22px;
+  background-color: rgba(245, 245, 245, 0.67);
+  border: var(--slider-border);
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  grid-template-rows: auto;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  padding: 5px;
+
+  & > .back,
+  & > .forth {
+    background-color: transparent;
+    grid-row: 2;
+    position: relative;
+    line-height: 0px;
+    padding-left: 3px;
+    height: 100%;
+    border: none;
+    outline: none;
+
+    &:hover {
+      background-color: rgba(227, 206, 210, 0.5);
+    }
+  }
+
+  > .back {
+    content: url("./assets/arrow_back.svg");
+    grid-column: 1;
+  }
+
+  > .forth {
+    content: url("./assets/arrow_forward.svg");
+    grid-column: 3;
+    left: 1px;
+  }
+}
+
+.poster-slider {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  width: var(--poster-width);
+  aspect-ratio: var(--aspect-ratio);
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+
+  img {
+    width: var(--poster-width);
+    aspect-ratio: var(--aspect-ratio);
+    position: relative;
+  }
+}
+
+.navigation {
+  grid-row: 3;
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  overflow: auto hidden;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  button {
+    min-width: 12px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+  }
+}
+
+button:hover {
+  background-color: var(--nav-button-hover-color);
+}
