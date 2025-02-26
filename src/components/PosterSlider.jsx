@@ -1,4 +1,4 @@
-import "../styles/posterSlider.css";
+import "../styles/PosterSlider.css";
 import { useState, useRef, useEffect } from "react";
 
 import pic1 from "../assets/hanazon1.jpg";

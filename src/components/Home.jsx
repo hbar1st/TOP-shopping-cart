@@ -7,9 +7,13 @@ function Home() {
       <header>
         <h1>Welcome to Hanazon! The randomest shopping experience ever!</h1>
       </header>
-      <PosterSlider />
+      <PosterSlider onClick={handleClick} />
     </>
   );
+}
+
+function handleClick() {
+  alert("You clicked me!");
 }
 
 export default Home;

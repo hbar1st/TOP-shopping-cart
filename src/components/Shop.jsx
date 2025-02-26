@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/App.css";
+import ProductCard from "./ProductCard.jsx";
 
 const useStoreProducts = () => {
   const [storeProducts, setStoreProducts] = useState(null);
@@ -62,12 +63,16 @@ function Shop() {
       </p>
     );
 
+  const productCards = storeProducts.map((product) => {
+    return <ProductCard key={product.id} product={product}></ProductCard>;
+  });
   //TODO display storeProducts in cards down there
   return (
     <>
       <header>
         <h1>Here we go!</h1>
       </header>
+      <div className="card-container">{productCards}</div>
     </>
   );
 }
