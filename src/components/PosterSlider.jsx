@@ -34,11 +34,7 @@ function PosterSlider() {
     return () => clearInterval(intervalId);
   });
 
-  return (
-    <div className="poster-frame">
-      <div className="poster-slider">{posterSpans}</div>
-    </div>
-  );
+  return <div className="poster-slider">{posterSpans}</div>;
 }
 
 export default PosterSlider;
