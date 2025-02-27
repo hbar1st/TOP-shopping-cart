@@ -1,12 +1,19 @@
 import { useState } from "react";
 import "../styles/App.css";
+import logo from "../assets/logo.png";
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
 function Nav() {
   return (
     <nav>
-      <p id="logo">hanazon</p>
+      <div id="logo">
+        <span>z</span>
+        <div id="mid-logo">
+          <p>hana</p>
+        </div>
+        <span>n</span>
+      </div>
       <ul>
         <li>
           <NavLink

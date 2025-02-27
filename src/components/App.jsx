@@ -7,11 +7,14 @@ function App() {
     <>
       <Nav />
       <Navigate to="/home" replace />
-      <main>
-        <Outlet />
-      </main>
     </>
   );
 }
 
 export default App;
+
+/**
+       <main className="orient">
+        <Outlet />
+      </main>
+ */

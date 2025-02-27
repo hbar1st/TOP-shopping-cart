@@ -14,11 +14,19 @@ li {
   list-style: none;
 }
 
+#root {
+  display: flex;
+  padding: 1rem;
+  padding-top: 0.1rem;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
 nav > ul {
   display: flex;
 
   justify-content: flex-end;
-  border-bottom: 2px solid pink;
 
   > li {
     padding: 1rem;
@@ -26,12 +34,10 @@ nav > ul {
 }
 
 nav {
-  position: sticky;
-  top: 0;
-  right: 0;
-  margin-left: auto;
+  width: 100%;
   justify-content: space-between;
   display: flex;
+  align-items: center;
 }
 
 .centerH {
@@ -51,7 +57,7 @@ nav {
 a.active {
   text-decoration: underline;
 
-  color: #64fcff;
+  color: #c4f7fc;
 }
 
 a > svg {
@@ -62,22 +68,46 @@ a > svg {
 a.active > svg {
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  stroke: #64fcff;
-  color: #64fcff;
+  stroke: #c4f7fc;
+  color: c4f7fcff;
 }
 
 main {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   padding: 1rem;
 }
 
 #logo {
+  display: flex;
+
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+
+  > :nth-child(1) {
+    font-size: clamp(2rem, 8rem, 15vw);
+    margin-right: 0.2rem;
+  }
+
+  > :nth-child(3) {
+    font-size: clamp(2rem, 8rem, 15vw);
+  }
+}
+#mid-logo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   font-family: "Coiny", fantasy;
-  padding: 10px;
-  font-size: 2rem;
+  padding: 0.7rem;
+  font-size: clamp(0.5rem, 2rem, 4vw);
+  border-radius: 50%;
+  border: 2px dashed #a6f9fd;
+  aspect-ratio: 1;
+  width: 5rem;
+  max-width: clamp(1.5rem, 5rem, 10vw);
+  max-height: clamp(1.5rem, 5rem, 10vw);
+  margin-top: 1.3rem;
 }
 
 .card {
@@ -107,4 +137,24 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   padding: 2px 16px;
+}
+
+.relative {
+  position: relative;
+}
+
+.logo-p2 {
+  top: 1ch;
+
+  left: calc(-1rem - 2px);
+}
+
+.logo-p3 {
+  top: 2ch;
+
+  left: calc(-2ch - 4px);
+}
+
+h2 {
+  justify-self: flex-end;
 }
