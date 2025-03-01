@@ -1,21 +1,79 @@
-import { findAllByDisplayValue } from "@testing-library/react";
+import { useState } from "react";
+
 import "../styles/App.css";
 
 import PropTypes from "prop-types";
+import { ShoppingCart } from "lucide-react";
+
+function handleChange(
+  e,
+  product,
+  cartItems,
+  setCartItems,
+  setShortStock,
+  setTypedAmt
+) {
+  const newValue = Number(e.target.value);
+  const prodId = product.id;
+  console.log({ prodId });
+  let newCart = cartItems.filter((el) => el.id !== prodId);
+
+  function updateProd(value) {
+    let updatedProdArr = cartItems.filter((el) => el.id === prodId);
+    if (updatedProdArr.length === 1) {
+      let updatedProd = { ...updatedProdArr[0], amt: value };
+      newCart.push(updatedProd);
+    } else {
+      newCart.push({ id: product.id, amt: value });
+    }
+  }
+
+  if (newValue !== 0) {
+    if (newValue > product.amtInStock) {
+      setShortStock(true);
+    } else {
+      setShortStock(false);
+      updateProd(newValue);
+    }
+  }
+
+  setCartItems(newCart);
+  setTypedAmt(newValue);
+}
+
+function getAmtInCart(cartItems, id) {
+  let amt = 0;
+  let itemArr = cartItems.filter((el) => el.id === id);
+  if (itemArr.length === 1) {
+    amt = itemArr[0].amt;
+  }
+  return amt;
+}
 
 ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
+  cartItems: PropTypes.array.isRequired,
+  setCartItems: PropTypes.func.isRequired,
+  setTypedAmt: PropTypes.func.Number,
 };
 
-function ProductCard({ product }) {
-  const freeDelivery = "Free Delivery";
-  const outOfStock = "Out of Stock";
+function ProductCard({ product, cartItems, setCartItems }) {
+  const [shortStock, setShortStock] = useState(false);
+
+  const currAmt = getAmtInCart(cartItems, product.id);
+
+  const [typedAmt, setTypedAmt] = useState(currAmt);
+  const [outOfStock, setOutOfStock] = useState(product.amtInStock === 0);
+
+  const freeDeliveryMsg = "Free Delivery";
+  const outOfStockMsg = "Out of Stock";
+  let highlightColor = "#c4f7fcff";
   const stars = [];
   const makeStars = (rating) => {
     const wholeStars = Math.floor(rating);
     const fraction = `${Math.floor((rating - wholeStars) * 100)}%`;
     const getFillValue = (i, key) => {
-      let ret = "cyan";
+      let ret = highlightColor;
       if (i == wholeStars) {
         ret = `url(#${key})`;
       }
@@ -39,8 +97,8 @@ function ProductCard({ product }) {
         >
           <defs>
             <linearGradient id={key}>
-              <stop offset="0%" stopColor="cyan" />
-              <stop offset={fraction} stopColor="cyan" />
+              <stop offset="0%" stopColor={highlightColor} />
+              <stop offset={fraction} stopColor={highlightColor} />
               <stop offset={fraction} stopColor="white" />
               <stop offset="100%" stopColor="white" />
             </linearGradient>
@@ -64,10 +122,42 @@ function ProductCard({ product }) {
         <span>{product.rating}</span>
         {makeStars(product.rating)}
       </div>
-      <p>${product.price}</p>
-      <p>{product.amtInStock > 0 ? freeDelivery : outOfStock}</p>
-      <input type="number" min="0" max={product.amtInStock} name="" id="" />
-      <button type="button">Add to Cart</button>
+      <p className="bigger">${product.price}</p>
+      <p className="availability">
+        {outOfStock ? outOfStockMsg : freeDeliveryMsg}
+      </p>
+      <div className="input-amt" id={product.id}>
+        <input
+          type="number"
+          inputMode="numeric"
+          pattern="\d*"
+          min="0"
+          max={product.amtInStock}
+          name="amt"
+          value={typedAmt}
+          onChange={(e) =>
+            handleChange(
+              e,
+              product,
+              cartItems,
+              setCartItems,
+              setShortStock,
+              setTypedAmt
+            )
+          }
+        />
+
+        <button type="button" disabled={shortStock || outOfStock}>
+          Add to Cart
+        </button>
+      </div>
+
+      <p
+        className={shortStock ? "invalid-amt" : "hidden"}
+        aria-hidden={!shortStock}
+      >
+        Only {product.amtInStock} available.
+      </p>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
 import { useOutletContext } from "react-router-dom";
+import { getActiveElement } from "@testing-library/user-event/dist/cjs/utils/index.js";
 
 const useStoreProducts = () => {
   const [storeProducts, setStoreProducts] = useState(null);
@@ -49,8 +50,9 @@ function processStoreProducts(json) {
   return products;
 }
 
+
 function Shop() {
-  const { setPortrait } = useOutletContext();
+  const { cartItems, setCartItems } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
 
   if (loading)
@@ -67,11 +69,18 @@ function Shop() {
     );
 
   const productCards = storeProducts.map((product) => {
-    return <ProductCard key={product.id} product={product}></ProductCard>;
+    return (
+      <ProductCard
+        key={product.id}
+        product={product}
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      ></ProductCard>
+    );
   });
   //TODO display storeProducts in cards down there
   return (
-    <div class="shop" id="main">
+    <div className="shop" id="main">
       <header>
         <h2>Shop till you drop!</h2>
       </header>
