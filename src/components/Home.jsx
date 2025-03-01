@@ -1,4 +1,5 @@
 import "../styles/App.css";
+
 import { useState, useRef, useEffect } from "react";
 import PosterSlider from "./PosterSlider.jsx";
 
@@ -7,20 +8,22 @@ import { MoveRight } from "lucide-react";
 import { MoveDown } from "lucide-react";
 
 function Home() {
-  const [flexHorizontal, setFlexHorizontal] = useState(true);
+  const [portrait, setPortrait] = useState(false);
   const startRef = useRef(null);
   const posterSliderRef = useRef(null);
 
+  // respond to window resizing by changing the arrow icon displayed
+  // as layout will either be horizontal or vertical (flex)
   useEffect(() => {
     const handleResize = () => {
       if (startRef.current && posterSliderRef.current) {
         if (startRef.current.offsetTop < posterSliderRef.current.offsetTop) {
-          if (flexHorizontal) {
-            setFlexHorizontal(false);
+          if (!portrait) {
+            setPortrait(true);
           }
         } else {
-          if (!flexHorizontal) {
-            setFlexHorizontal(true);
+          if (portrait) {
+            setPortrait(false);
           }
         }
       }
@@ -32,14 +35,14 @@ function Home() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [flexHorizontal]);
+  }, [portrait, setPortrait]);
 
   return (
-    <>
+    <div className="home" id="main">
       <header>
         <h1>Welcome to Hanazon! The randomest shopping experience ever!</h1>
         <h2 id="start" ref={startRef}>
-          Click to start {flexHorizontal ? <MoveRight /> : <MoveDown />}
+          Click to start {portrait ? <MoveDown /> : <MoveRight />}
         </h2>
       </header>
       <NavLink to="/shop">
@@ -47,7 +50,7 @@ function Home() {
           <PosterSlider />
         </div>
       </NavLink>
-    </>
+    </div>
   );
 }
 

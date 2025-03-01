@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
+import { useOutletContext } from "react-router-dom";
 
 const useStoreProducts = () => {
   const [storeProducts, setStoreProducts] = useState(null);
@@ -48,6 +50,7 @@ function processStoreProducts(json) {
 }
 
 function Shop() {
+  const { setPortrait } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
 
   if (loading)
@@ -68,12 +71,12 @@ function Shop() {
   });
   //TODO display storeProducts in cards down there
   return (
-    <>
+    <div class="shop" id="main">
       <header>
-        <h1>Here we go!</h1>
+        <h2>Shop till you drop!</h2>
       </header>
       <div className="card-container">{productCards}</div>
-    </>
+    </div>
   );
 }
 

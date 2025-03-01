@@ -3,6 +3,7 @@ import Shop from "./components/Shop.jsx";
 import Cart from "./components/Cart.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import Home from "./components/Home.jsx";
+import ThanksForShopping from "./components/ThanksForShopping.jsx";
 
 const routes = [
   {
@@ -13,6 +14,7 @@ const routes = [
       { path: "home", element: <Home /> },
       { path: "shop", element: <Shop /> },
       { path: "cart", element: <Cart /> },
+      { path: "thanks", element: <ThanksForShopping /> },
     ],
   },
 ];

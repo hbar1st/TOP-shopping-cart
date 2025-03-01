@@ -1,6 +1,4 @@
-
 import "../styles/App.css";
-import logo from "../assets/logo.png";
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
