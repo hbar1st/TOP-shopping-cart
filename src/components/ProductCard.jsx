@@ -10,54 +10,49 @@ function handleClick(
   product,
   cartItems,
   setCartItems,
-  productInventory,
-  setProductInventory,
   setTypedAmt,
-  setOutOfStock,
   setShowModal
 ) {
-  let newInventory = [...productInventory].filter((el) => el.id !== product.id);
-  let inventoryProdArr = productInventory.filter((el) => el.id === product.id);
   console.log({ newValue });
   if (isNaN(newValue) || newValue === 0) {
     newValue = 1; //assume user meant to add one item to the cart
   }
-  if (newValue > 0) {
-    let newCart = updateProd(newValue, cartItems, product.id);
-    let newStockValue = inventoryProdArr[0].amt - newValue;
-    newInventory.push({
-      ...inventoryProdArr[0],
-      amt: newStockValue,
-    });
-    if (newStockValue === 0) {
-      setOutOfStock(true);
-    }
-    setTypedAmt(0);
-    setProductInventory(newInventory);
-    console.log(newCart);
-    console.log(newInventory);
-    setCartItems(newCart);
-    //show success dialog
-    setShowModal(true);
-  }
-}
+  let newCart = updateProd(newValue, cartItems, product.id, product.amtInStock);
 
+  setTypedAmt(0);
+  setCartItems(newCart);
+  //show success dialog
+  setShowModal(true);
+}
+// if stock total is 5, cart is 0, user types 2, then cart will say amt is 2 + 0 = 2, remainingInStock = 5 - 2 = 3
+// if stock total is 5, cart is 2, user types 1, then cart will say amt is 1 + 2 = 3, remainingInStock = 3 - 1 = 2
 /**
  *
  * @param {*} value - the value the user typed in if it is valid only (don't pass in invalid values)
  * @param {*} cartItems - the current array of items in the cart
  * @param {*} prodId - the product.id that represents the product the user is clicking Add To Cart on
+ * @param {*} originalAmtInStock - the amount in stock we originally "fetched"
  * @returns - an array of new cart items with the specific product amount updated within it, which can be passed to setCartItems
  */
-function updateProd(value, cartItems, prodId) {
+function updateProd(value, cartItems, prodId, originalAmtInStock) {
   const amtInCart = getAmtInCart(cartItems, prodId);
+
   let newCart = cartItems.filter((el) => el.id !== prodId);
   let updatedProdArr = cartItems.filter((el) => el.id === prodId);
   if (updatedProdArr.length === 1) {
-    let updatedProd = { ...updatedProdArr[0], amt: value + amtInCart };
+    let currentStock = updatedProdArr[0].remainingStock;
+    let updatedProd = {
+      ...updatedProdArr[0],
+      amt: value + amtInCart,
+      remainingStock: currentStock - value,
+    };
     newCart.push(updatedProd);
   } else {
-    newCart.push({ id: prodId, amt: value });
+    newCart.push({
+      id: prodId,
+      amt: value + amtInCart,
+      remainingStock: originalAmtInStock - value,
+    });
   }
   return newCart;
 }
@@ -98,31 +93,50 @@ function getAmtInCart(cartItems, id) {
   return amt;
 }
 
+/**
+ * gets the remaining stock value from the cart object
+ * @param {*} cartItems
+ * @param {*} id
+ * @returns -1 if this product is not in the cart
+ */
+function getRemainingStock(cartItems, id) {
+  let amt = 0;
+  let itemArr = cartItems.filter((el) => el.id === id);
+  if (itemArr.length === 1) {
+    amt = itemArr[0].remainingStock;
+  } else {
+    return -1;
+  }
+  return amt;
+}
+
 ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
-  productInventory: PropTypes.array.isRequired,
-  setProductInventory: PropTypes.func.isRequired,
   cartItems: PropTypes.array.isRequired,
   setCartItems: PropTypes.func.isRequired,
 };
 
-function ProductCard({
-  product,
-  productInventory,
-  setProductInventory,
-  cartItems,
-  setCartItems,
-}) {
+function ProductCard({ product, cartItems, setCartItems }) {
   const modalRef = useRef(null);
   const rootElement = document.getElementById("root");
   const [shortStock, setShortStock] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
   const [typedAmt, setTypedAmt] = useState(0);
-  const [outOfStock, setOutOfStock] = useState(product.amtInStock === 0);
 
   const freeDeliveryMsg = "Free Delivery";
   const outOfStockMsg = "Out of Stock";
   let highlightColor = "#c4f7fcff";
+
+  const isOutOfStock = (product, cartItems) => {
+    console.log("In isOutOfStock");
+    console.log("product: ", product);
+    console.log("cartItems: ", cartItems);
+    return (
+      product.amtInStock === 0 || getRemainingStock(cartItems, product.id) === 0
+    );
+  };
+
   const stars = [];
   const makeStars = (rating) => {
     const wholeStars = Math.floor(rating);
@@ -176,6 +190,8 @@ function ProductCard({
       scrollToModal();
     }
   }, [showModal]);
+
+  let remainingStockOfProduct = getRemainingStock(cartItems, product.id);
   return (
     <div className="card">
       <img src={product.image} alt={product.title} />
@@ -188,7 +204,7 @@ function ProductCard({
       </div>
       <p className="bigger">${product.price}</p>
       <p className="availability">
-        {outOfStock ? outOfStockMsg : freeDeliveryMsg}
+        {isOutOfStock(product, cartItems) ? outOfStockMsg : freeDeliveryMsg}
       </p>
       <div className="input-amt" id={product.id}>
         <input
@@ -197,7 +213,11 @@ function ProductCard({
           inputMode="numeric"
           pattern="\d*"
           min="0"
-          max={product.amtInStock}
+          max={
+            remainingStockOfProduct !== -1
+              ? remainingStockOfProduct
+              : product.amtInStock
+          }
           name="amt"
           value={typedAmt === 0 ? "" : typedAmt}
           onChange={(e) =>
@@ -212,15 +232,12 @@ function ProductCard({
               product,
               cartItems,
               setCartItems,
-              productInventory,
-              setProductInventory,
               setTypedAmt,
-              setOutOfStock,
               setShowModal
             )
           }
           type="button"
-          disabled={shortStock || outOfStock}
+          disabled={shortStock || isOutOfStock(product, cartItems)}
         >
           Add to Cart
         </button>

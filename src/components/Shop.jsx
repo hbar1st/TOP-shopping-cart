@@ -46,13 +46,14 @@ function processStoreProducts(json) {
       amtInStock: Math.floor(Math.random() * 6),
     });
   });
+
   return products;
 }
 
 function Shop() {
   const { cartItems, setCartItems } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
-  const [productInventory, setProductInventory] = useState([]);
+  //TODO ?? should I setup the product inventory here? it is affected by the cart and by the fetched data
   if (loading)
     return (
       <p className="centerV centerH announce">
@@ -66,39 +67,22 @@ function Shop() {
       </p>
     );
 
-  function getProductInventory(id, inventory) {
-    if (!inventory) return [];
-    let prodArr = inventory.filter((el) => el.id === id);
-    if (prodArr.length === 0) {
-      return 0;
+  /**
+   *
+   * @param {*} cartItems
+   * @param {*} id
+   * @returns -1 if this product is not in the cart
+   */
+  function getRemainingStock(cartItems, id) {
+    //TODO this code is repeated here and in ProductCard. You should just pass it down!!
+    let amt = 0;
+    let itemArr = cartItems.filter((el) => el.id === id);
+    if (itemArr.length === 1) {
+      amt = itemArr[0].remainingStock;
     } else {
-      return prodArr[0].amt;
+      return -1;
     }
-  }
-
-  // setup a product inventory to use to manage inventory between rerenders?
-  let newProductInventory = [...productInventory];
-  if (newProductInventory.length === 0) {
-    storeProducts.map((product) => {
-      console.log(
-        "does cart ever have anything at this point? ",
-        cartItems.length
-      );
-      let cartProdArr = cartItems.filter((el) => el.id === product.id);
-      let amtInCart = 0;
-      if (cartProdArr.length > 0) {
-        amtInCart = cartProdArr[0].amt;
-      }
-      let prodArr = newProductInventory.filter((el) => el.id === product.id);
-      if (prodArr.length === 0) {
-        newProductInventory.push({
-          id: product.id,
-          amt: product.amtInStock - amtInCart,
-        });
-      }
-    });
-    setProductInventory(newProductInventory);
-    console.log(newProductInventory);
+    return amt;
   }
 
   const productCards = storeProducts.map((product) => {
@@ -107,10 +91,7 @@ function Shop() {
         key={product.id}
         product={{
           ...product,
-          amtInStock: getProductInventory(product.id, productInventory),
         }}
-        productInventory={productInventory}
-        setProductInventory={setProductInventory}
         cartItems={cartItems}
         setCartItems={setCartItems}
       ></ProductCard>
