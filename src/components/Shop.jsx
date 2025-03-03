@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
-
+import { useState, useRef, useEffect } from "react";
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
 import { useOutletContext } from "react-router-dom";
+
+import { createPortal } from "react-dom";
+import Modal from "./Modal.jsx";
 
 const useStoreProducts = () => {
   const [storeProducts, setStoreProducts] = useState(null);
@@ -53,7 +55,9 @@ function processStoreProducts(json) {
 function Shop() {
   const { cartItems, setCartItems } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
-  //TODO ?? should I setup the product inventory here? it is affected by the cart and by the fetched data
+
+  const [showModal, setShowModal] = useState(null);
+
   if (loading)
     return (
       <p className="centerV centerH announce">
@@ -94,17 +98,23 @@ function Shop() {
         }}
         cartItems={cartItems}
         setCartItems={setCartItems}
+        setShowModal={setShowModal}
       ></ProductCard>
     );
   });
-  //TODO display storeProducts in cards down there
+
   return (
-    <div className="shop" id="main">
-      <header>
-        <h2>Shop till you drop!</h2>
-      </header>
-      <div className="card-container">{productCards}</div>
-    </div>
+    <>
+      {showModal && (
+        <Modal onClose={() => setShowModal(null)} showModal={showModal}></Modal>
+      )}
+      <div className="shop" id="main">
+        <header>
+          <h2>Shop till you drop!</h2>
+        </header>
+        <div className="card-container">{productCards}</div>
+      </div>
+    </>
   );
 }
 

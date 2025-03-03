@@ -1,9 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import "../styles/App.css";
 import PropTypes from "prop-types";
-
-import { createPortal } from "react-dom";
-import ModalContent from "./ModalContent.jsx";
 
 function handleClick(
   newValue,
@@ -22,7 +19,7 @@ function handleClick(
   setTypedAmt(0);
   setCartItems(newCart);
   //show success dialog
-  setShowModal(true);
+  setShowModal({ ...product, amt: newValue });
 }
 // if stock total is 5, cart is 0, user types 2, then cart will say amt is 2 + 0 = 2, remainingInStock = 5 - 2 = 3
 // if stock total is 5, cart is 2, user types 1, then cart will say amt is 1 + 2 = 3, remainingInStock = 3 - 1 = 2
@@ -110,14 +107,12 @@ ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
   cartItems: PropTypes.array.isRequired,
   setCartItems: PropTypes.func.isRequired,
+  setShowModal: PropTypes.func.isRequired,
 };
 
-function ProductCard({ product, cartItems, setCartItems }) {
-  const modalRef = useRef(null);
-  const rootElement = document.getElementById("root");
+function ProductCard({ product, cartItems, setCartItems, setShowModal }) {
   const [shortStock, setShortStock] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
   const [typedAmt, setTypedAmt] = useState(0);
 
   const freeDeliveryMsg = "Free Delivery";
@@ -177,16 +172,6 @@ function ProductCard({ product, cartItems, setCartItems }) {
     return stars;
   };
 
-  useEffect(() => {
-    const scrollToModal = () => {
-      modalRef.current.scrollIntoView({ behavior: "smooth" });
-    };
-
-    if (modalRef.current && showModal) {
-      scrollToModal();
-    }
-  }, [showModal]);
-
   let remainingStockOfProduct = getRemainingStock(cartItems, product.id);
   remainingStockOfProduct =
     remainingStockOfProduct !== -1
@@ -237,15 +222,6 @@ function ProductCard({ product, cartItems, setCartItems }) {
         >
           Add to Cart
         </button>
-
-        {showModal &&
-          createPortal(
-            <ModalContent
-              refProp={modalRef}
-              onClose={() => setShowModal(false)}
-            />,
-            rootElement
-          )}
       </div>
 
       <p
