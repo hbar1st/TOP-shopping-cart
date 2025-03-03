@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
 import { useOutletContext } from "react-router-dom";
-import { getActiveElement } from "@testing-library/user-event/dist/cjs/utils/index.js";
 
 const useStoreProducts = () => {
   const [storeProducts, setStoreProducts] = useState(null);
@@ -50,11 +49,10 @@ function processStoreProducts(json) {
   return products;
 }
 
-
 function Shop() {
   const { cartItems, setCartItems } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
-
+  const [productInventory, setProductInventory] = useState([]);
   if (loading)
     return (
       <p className="centerV centerH announce">
@@ -68,11 +66,51 @@ function Shop() {
       </p>
     );
 
+  function getProductInventory(id, inventory) {
+    if (!inventory) return [];
+    let prodArr = inventory.filter((el) => el.id === id);
+    if (prodArr.length === 0) {
+      return 0;
+    } else {
+      return prodArr[0].amt;
+    }
+  }
+
+  // setup a product inventory to use to manage inventory between rerenders?
+  let newProductInventory = [...productInventory];
+  if (newProductInventory.length === 0) {
+    storeProducts.map((product) => {
+      console.log(
+        "does cart ever have anything at this point? ",
+        cartItems.length
+      );
+      let cartProdArr = cartItems.filter((el) => el.id === product.id);
+      let amtInCart = 0;
+      if (cartProdArr.length > 0) {
+        amtInCart = cartProdArr[0].amt;
+      }
+      let prodArr = newProductInventory.filter((el) => el.id === product.id);
+      if (prodArr.length === 0) {
+        newProductInventory.push({
+          id: product.id,
+          amt: product.amtInStock - amtInCart,
+        });
+      }
+    });
+    setProductInventory(newProductInventory);
+    console.log(newProductInventory);
+  }
+
   const productCards = storeProducts.map((product) => {
     return (
       <ProductCard
         key={product.id}
-        product={product}
+        product={{
+          ...product,
+          amtInStock: getProductInventory(product.id, productInventory),
+        }}
+        productInventory={productInventory}
+        setProductInventory={setProductInventory}
         cartItems={cartItems}
         setCartItems={setCartItems}
       ></ProductCard>

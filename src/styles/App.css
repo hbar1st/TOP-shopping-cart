@@ -9,6 +9,9 @@
 :root {
   --highlight-color: #c4f7fcff;
 }
+body {
+  position: relative;
+}
 body,
 #root {
   width: 100dvw;
@@ -27,12 +30,40 @@ li {
   align-items: flex-start;
 }
 nav > ul {
-  display: flex;
-
-  justify-content: flex-end;
+  display: grid;
+  grid-template-rows: auto 1px auto;
+  grid-template-columns: repeat(3, auto);
+  align-items: end;
 
   > li {
-    padding: 1rem;
+    margin: 0 1rem;
+  }
+
+  > :nth-child(3) {
+    grid-row: 1 / 4;
+    grid-column: 3;
+
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-template-columns: auto;
+
+    > a {
+      grid-row: 1 / 4;
+      grid-column: 1;
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-template-columns: subgrid;
+
+      > svg {
+        grid-column: 1 / 3;
+        grid-row: 2 / 4;
+      }
+
+      > .count {
+        grid-column: 2 / 4;
+        grid-row: 1 / 3;
+      }
+    }
   }
 }
 
@@ -63,12 +94,12 @@ a.active {
   color: #c4f7fc;
 }
 
-a > svg {
+a svg {
   border: none;
   color: white;
 }
 
-a.active > svg {
+a.active svg {
   border-bottom-width: 1px;
   border-bottom-style: solid;
   stroke: #c4f7fc;
@@ -77,6 +108,7 @@ a.active > svg {
 
 main {
   width: 100%;
+  order: 3;
 }
 
 .shop#main {
@@ -160,6 +192,7 @@ main {
   display: grid;
   align-items: center;
   justify-items: center;
+  justify-content: center;
   grid-template-rows: auto;
   grid-template-columns: repeat(auto-fit, minmax(250px, 18%));
   grid-auto-flow: row;
@@ -235,4 +268,45 @@ h2 {
 button:disabled {
   background-color: gray;
   pointer-events: none;
+}
+
+.counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  aspect-ratio: 1;
+  border: 1px solid pink;
+  background-color: rgb(129, 1, 1);
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1rem;
+  min-width: 20px;
+  max-width: 20px;
+
+  > span {
+    flex: 1;
+    aspect-ratio: 1;
+  }
+}
+
+.cart {
+  display: grid;
+  grid-template-columns: 15px 5px 15px;
+  grid-template-rows: 15px 5px 15px;
+
+  > svg {
+    grid-row: 2 / 4;
+    grid-column: 1 / 3;
+  }
+
+  > .counter {
+    grid-row: 1 / 3;
+    grid-column: 2 / 3;
+  }
+}
+
+.modal {
+  order: 2;
 }

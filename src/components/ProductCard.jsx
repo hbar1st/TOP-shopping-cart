@@ -1,43 +1,91 @@
-import { useState } from "react";
-
+import { useState, useRef, useEffect } from "react";
 import "../styles/App.css";
-
 import PropTypes from "prop-types";
-import { ShoppingCart } from "lucide-react";
 
-function handleChange(
-  e,
+import { createPortal } from "react-dom";
+import ModalContent from "./ModalContent.jsx";
+
+function handleClick(
+  newValue,
   product,
   cartItems,
   setCartItems,
-  setShortStock,
-  setTypedAmt
+  productInventory,
+  setProductInventory,
+  setTypedAmt,
+  setOutOfStock,
+  setShowModal
 ) {
-  const newValue = Number(e.target.value);
-  const prodId = product.id;
-  console.log({ prodId });
-  let newCart = cartItems.filter((el) => el.id !== prodId);
-
-  function updateProd(value) {
-    let updatedProdArr = cartItems.filter((el) => el.id === prodId);
-    if (updatedProdArr.length === 1) {
-      let updatedProd = { ...updatedProdArr[0], amt: value };
-      newCart.push(updatedProd);
-    } else {
-      newCart.push({ id: product.id, amt: value });
-    }
+  let newInventory = [...productInventory].filter((el) => el.id !== product.id);
+  let inventoryProdArr = productInventory.filter((el) => el.id === product.id);
+  console.log({ newValue });
+  if (isNaN(newValue) || newValue === 0) {
+    newValue = 1; //assume user meant to add one item to the cart
   }
+  if (newValue > 0) {
+    let newCart = updateProd(newValue, cartItems, product.id);
+    let newStockValue = inventoryProdArr[0].amt - newValue;
+    newInventory.push({
+      ...inventoryProdArr[0],
+      amt: newStockValue,
+    });
+    if (newStockValue === 0) {
+      setOutOfStock(true);
+    }
+    setTypedAmt(0);
+    setProductInventory(newInventory);
+    console.log(newCart);
+    console.log(newInventory);
+    setCartItems(newCart);
+    //show success dialog
+    setShowModal(true);
+  }
+}
+
+/**
+ *
+ * @param {*} value - the value the user typed in if it is valid only (don't pass in invalid values)
+ * @param {*} cartItems - the current array of items in the cart
+ * @param {*} prodId - the product.id that represents the product the user is clicking Add To Cart on
+ * @returns - an array of new cart items with the specific product amount updated within it, which can be passed to setCartItems
+ */
+function updateProd(value, cartItems, prodId) {
+  const amtInCart = getAmtInCart(cartItems, prodId);
+  let newCart = cartItems.filter((el) => el.id !== prodId);
+  let updatedProdArr = cartItems.filter((el) => el.id === prodId);
+  if (updatedProdArr.length === 1) {
+    let updatedProd = { ...updatedProdArr[0], amt: value + amtInCart };
+    newCart.push(updatedProd);
+  } else {
+    newCart.push({ id: prodId, amt: value });
+  }
+  return newCart;
+}
+
+/**
+ *
+ * @param {*} e
+ * @param {*} product
+ * @param {*} cartItems
+ * @param {*} setShortStock
+ * @param {*} setTypedAmt
+ */
+function handleChange(e, product, cartItems, setShortStock, setTypedAmt) {
+  const newValue = Number(e.target.value);
+  const amtInCart = getAmtInCart(cartItems, product.id);
 
   if (newValue !== 0) {
-    if (newValue > product.amtInStock) {
+    // if the user tries to type a number great than amtInStock or a number greater than the total of amtInStock plus the number of in the cart then, that's invalid
+    if (
+      newValue > product.amtInStock ||
+      newValue > product.amtInStock + amtInCart
+    ) {
       setShortStock(true);
     } else {
       setShortStock(false);
-      updateProd(newValue);
     }
   }
 
-  setCartItems(newCart);
   setTypedAmt(newValue);
 }
 
@@ -52,17 +100,24 @@ function getAmtInCart(cartItems, id) {
 
 ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
+  productInventory: PropTypes.array.isRequired,
+  setProductInventory: PropTypes.func.isRequired,
   cartItems: PropTypes.array.isRequired,
   setCartItems: PropTypes.func.isRequired,
-  setTypedAmt: PropTypes.func.Number,
 };
 
-function ProductCard({ product, cartItems, setCartItems }) {
+function ProductCard({
+  product,
+  productInventory,
+  setProductInventory,
+  cartItems,
+  setCartItems,
+}) {
+  const modalRef = useRef(null);
+  const rootElement = document.getElementById("root");
   const [shortStock, setShortStock] = useState(false);
-
-  const currAmt = getAmtInCart(cartItems, product.id);
-
-  const [typedAmt, setTypedAmt] = useState(currAmt);
+  const [showModal, setShowModal] = useState(false);
+  const [typedAmt, setTypedAmt] = useState(0);
   const [outOfStock, setOutOfStock] = useState(product.amtInStock === 0);
 
   const freeDeliveryMsg = "Free Delivery";
@@ -112,6 +167,15 @@ function ProductCard({ product, cartItems, setCartItems }) {
     return stars;
   };
 
+  useEffect(() => {
+    const scrollToModal = () => {
+      modalRef.current.scrollIntoView({ behavior: "smooth" });
+    };
+
+    if (modalRef.current && showModal) {
+      scrollToModal();
+    }
+  }, [showModal]);
   return (
     <div className="card">
       <img src={product.image} alt={product.title} />
@@ -128,28 +192,47 @@ function ProductCard({ product, cartItems, setCartItems }) {
       </p>
       <div className="input-amt" id={product.id}>
         <input
+          step="1"
           type="number"
           inputMode="numeric"
           pattern="\d*"
           min="0"
           max={product.amtInStock}
           name="amt"
-          value={typedAmt}
+          value={typedAmt === 0 ? "" : typedAmt}
           onChange={(e) =>
-            handleChange(
-              e,
-              product,
-              cartItems,
-              setCartItems,
-              setShortStock,
-              setTypedAmt
-            )
+            handleChange(e, product, cartItems, setShortStock, setTypedAmt)
           }
         />
 
-        <button type="button" disabled={shortStock || outOfStock}>
+        <button
+          onClick={() =>
+            handleClick(
+              typedAmt,
+              product,
+              cartItems,
+              setCartItems,
+              productInventory,
+              setProductInventory,
+              setTypedAmt,
+              setOutOfStock,
+              setShowModal
+            )
+          }
+          type="button"
+          disabled={shortStock || outOfStock}
+        >
           Add to Cart
         </button>
+
+        {showModal &&
+          createPortal(
+            <ModalContent
+              refProp={modalRef}
+              onClose={() => setShowModal(false)}
+            />,
+            rootElement
+          )}
       </div>
 
       <p

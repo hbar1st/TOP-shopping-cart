@@ -2,7 +2,13 @@ import "../styles/App.css";
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
-function Nav() {
+import PropTypes from "prop-types";
+
+Nav.propTypes = {
+  cartItems: PropTypes.array.isRequired,
+  setCartItems: PropTypes.func.isRequired,
+};
+function Nav({ cartItems, setCartItems }) {
   return (
     <nav>
       <div id="logo">
@@ -42,8 +48,12 @@ function Nav() {
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            <ShoppingCart color="white" size={24}></ShoppingCart>
-            <span className="counter"></span>
+            <div className="cart">
+              <ShoppingCart color="white" size={24}></ShoppingCart>
+              <div className="counter">
+                <span>{cartItems.reduce((acc, el) => acc + el.amt, 0)}</span>
+              </div>
+            </div>
           </NavLink>
         </li>
       </ul>
