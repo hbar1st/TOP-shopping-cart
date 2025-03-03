@@ -65,16 +65,12 @@ function updateProd(value, cartItems, prodId, originalAmtInStock) {
  * @param {*} setShortStock
  * @param {*} setTypedAmt
  */
-function handleChange(e, product, cartItems, setShortStock, setTypedAmt) {
+function handleChange(e, currAmtInStock, setShortStock, setTypedAmt) {
   const newValue = Number(e.target.value);
-  const amtInCart = getAmtInCart(cartItems, product.id);
 
   if (newValue !== 0) {
     // if the user tries to type a number great than amtInStock or a number greater than the total of amtInStock plus the number of in the cart then, that's invalid
-    if (
-      newValue > product.amtInStock ||
-      newValue > product.amtInStock + amtInCart
-    ) {
+    if (newValue > currAmtInStock) {
       setShortStock(true);
     } else {
       setShortStock(false);
@@ -192,6 +188,10 @@ function ProductCard({ product, cartItems, setCartItems }) {
   }, [showModal]);
 
   let remainingStockOfProduct = getRemainingStock(cartItems, product.id);
+  remainingStockOfProduct =
+    remainingStockOfProduct !== -1
+      ? remainingStockOfProduct
+      : product.amtInStock;
   return (
     <div className="card">
       <img src={product.image} alt={product.title} />
@@ -213,15 +213,11 @@ function ProductCard({ product, cartItems, setCartItems }) {
           inputMode="numeric"
           pattern="\d*"
           min="0"
-          max={
-            remainingStockOfProduct !== -1
-              ? remainingStockOfProduct
-              : product.amtInStock
-          }
+          max={remainingStockOfProduct}
           name="amt"
           value={typedAmt === 0 ? "" : typedAmt}
           onChange={(e) =>
-            handleChange(e, product, cartItems, setShortStock, setTypedAmt)
+            handleChange(e, remainingStockOfProduct, setShortStock, setTypedAmt)
           }
         />
 
@@ -256,7 +252,7 @@ function ProductCard({ product, cartItems, setCartItems }) {
         className={shortStock ? "invalid-amt" : "hidden"}
         aria-hidden={!shortStock}
       >
-        Only {product.amtInStock} available.
+        Only {remainingStockOfProduct} available.
       </p>
     </div>
   );
