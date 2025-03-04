@@ -23,7 +23,7 @@ function Cart() {
     );
   });
 
-  const total = cartItems.reduce((acc, el) => acc + el.price, 0);
+  const total = cartItems.reduce((acc, el) => acc + el.price, 0).toFixed(2);
   return (
     <div id="cart-page">
       <div id="cart">

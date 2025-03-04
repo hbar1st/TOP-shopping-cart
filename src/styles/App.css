@@ -261,7 +261,6 @@ h2 {
 }
 .input-amt {
   display: flex;
-  gap: 5px;
   justify-content: flex-start;
   align-items: stretch;
 
@@ -275,9 +274,18 @@ h2 {
     border-radius: 8px;
 
     border-style: dotted;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
 
+input:active,
+input:focus,
+input:focus-visible,
+input:focus-within {
+  border-style: dotted;
+  
+}
 .invalid-amt {
   color: red;
 }
@@ -298,7 +306,7 @@ button:disabled {
   font-size: 12px;
   aspect-ratio: 1;
   border: 1px solid pink;
-  background-color: rgb(129, 1, 1);
+  background-color: rgb(186 0 177 / 75%);
   color: white;
   border-radius: 50%;
   text-align: center;
@@ -381,6 +389,7 @@ dialog::backdrop {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  flex: 3;
   gap: 1rem;
 
   background-color: white;
@@ -406,6 +415,7 @@ dialog::backdrop {
 
 .button-panel {
   display: flex;
+  flex: 1;
   gap: 1rem;
   flex-direction: column;
   max-height: max-content;
@@ -435,10 +445,43 @@ dialog::backdrop {
 
 #cart-page {
   display: flex;
+  flex-wrap: wrap;
   background-color: var(--highlight-color);
 
   > * {
     margin: 1rem;
     border: 1px inset var(--background-color);
   }
+}
+
+.inc-dec {
+  width: min-content;
+  aspect-ratio: 1;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  & button {
+    box-sizing: border-box;
+    background: none;
+    border: none;
+    outline: none;
+    color: black;
+    width: min-content;
+    aspect-ratio: 1;
+    padding: 1px;
+    border-radius: 0%;
+    border: 1px dotted black;
+    border-left: 0px;
+  }
+
+  & button:hover {
+    background-color: #f2afe438;
+    transform: scale(1.1);
+  }
+}
+
+input:has(~ .inc-dec button:hover) {
+  background-color: #f2afe438;
 }

@@ -20,7 +20,7 @@ a {
 }
 
 a:hover {
-  color: #ff64f2;
+  color: #f2afe4;
 }
 
 body {
@@ -48,7 +48,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: rgb(186 0 177 / 75%);
 }
 button:focus,
 button:focus-visible {
@@ -66,4 +66,16 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

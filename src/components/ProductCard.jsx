@@ -130,7 +130,8 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
         className={shortStock ? "invalid-amt" : "hidden"}
         aria-hidden={!shortStock}
       >
-        Only {remainingStockOfProduct} available.
+        Only {shopPage ? remainingStockOfProduct : product.amtInStock}{" "}
+        available.
       </p>
     </div>
   );

@@ -1,6 +1,8 @@
 import "../styles/App.css";
 import PropTypes from "prop-types";
 
+import { Plus, Minus } from "lucide-react";
+
 // this button acts as a delete if it is shown in the cart page
 // and as an add if it is shown in the shop page
 function handleClick(
@@ -52,43 +54,76 @@ function updateProd(value, cartItems, product) {
   const originalAmtInStock = product.amtInStock;
   const amtInCart = getAmtInCart(cartItems, prodId);
 
-  let newCart = cartItems.filter((el) => el.id !== prodId);
+  //let newCart = cartItems.filter((el) => el.id !== prodId);
   let updatedProdArr = cartItems.filter((el) => el.id === prodId);
-  if (updatedProdArr.length === 1) {
-    let currentStock = updatedProdArr[0].remainingStock;
-    let updatedProd = {
-      ...updatedProdArr[0],
-      amt: value + amtInCart,
-      remainingStock: currentStock - value,
-    };
-    newCart.push(updatedProd);
-  } else {
-    newCart.push({
-      ...product,
-      amt: value + amtInCart,
-      remainingStock: originalAmtInStock - value,
-    });
+  let cart = [...cartItems];
+  cart.forEach((el, i) => {
+    if (el.id === product.id) {
+      let prod = {
+        ...el,
+        amt: value + amtInCart,
+        remainingStock: el.remainingStock - value,
+      };
+      cart[i] = prod;
+    }
+  });
+  if (updatedProdArr.length === 0) {
+    {
+      cart.push({
+        ...product,
+        amt: value + amtInCart,
+        remainingStock: originalAmtInStock - value,
+      });
+    }
   }
-  return newCart;
+
+  return cart;
 }
 
 /**
  *
  * @param {*} e
  * @param {*} product
+ * @param {*} cartDisplay (true if we're already in the cart and changing the value permanently updates the cart)
  * @param {*} cartItems
+ * @param {*} setCartItems
+ * @param {*} currAmtInStock
  * @param {*} setShortStock
  * @param {*} setTypedAmt
  */
-function handleChange(e, currAmtInStock, setShortStock, setTypedAmt) {
+function handleChange(
+  e,
+  product,
+  cartDisplay,
+  cartItems,
+  setCartItems,
+  currAmtInStock,
+  setShortStock,
+  setTypedAmt
+) {
   const newValue = Number(e.target.value);
-
+  const fakeShowModal = () => {};
   if (newValue !== 0) {
     // if the user tries to type a number great than amtInStock or a number greater than the total of amtInStock plus the number of in the cart then, that's invalid
-    if (newValue > currAmtInStock) {
+    if (
+      (!cartDisplay && newValue > currAmtInStock) ||
+      (cartDisplay && newValue > product.amtInStock)
+    ) {
       setShortStock(true);
     } else {
       setShortStock(false);
+      // if in cart already then go ahead and add the difference between the old and new values to the cart
+      if (cartDisplay) {
+        handleClick(
+          false,
+          newValue - getAmtInCart(cartItems, product.id),
+          product,
+          cartItems,
+          setCartItems,
+          setTypedAmt,
+          fakeShowModal
+        );
+      }
     }
   }
 
@@ -109,7 +144,7 @@ UpdateCart.propTypes = {
   setTypedAmt: PropTypes.func.isRequired,
 };
 
-function UpdateCart({
+export default function UpdateCart({
   cartDisplay,
   product,
   cartItems,
@@ -125,20 +160,63 @@ function UpdateCart({
   return (
     //TODO adjust display for cartDisplay true as below is for shop display configuration
     <div className="input-amt" id={product.id}>
-      <input
-        step="1"
-        type="number"
-        inputMode="numeric"
-        pattern="\d*"
-        min="0"
-        max={remainingStockOfProduct}
-        name="amt"
-        value={typedAmt === 0 ? "" : typedAmt}
-        onChange={(e) =>
-          handleChange(e, remainingStockOfProduct, setShortStock, setTypedAmt)
-        }
-      />
-
+      {cartDisplay ? (
+        <input
+          step="1"
+          type="number"
+          inputMode="numeric"
+          pattern="\d*"
+          min="0"
+          max={product.amtInStock}
+          name="amt"
+          value={getAmtInCart(cartItems, product.id)}
+          onChange={(e) =>
+            handleChange(
+              e,
+              product,
+              cartDisplay,
+              cartItems,
+              setCartItems,
+              remainingStockOfProduct,
+              setShortStock,
+              setTypedAmt,
+              setShowModal
+            )
+          }
+        ></input>
+      ) : (
+        <input
+          step="1"
+          type="number"
+          inputMode="numeric"
+          pattern="\d*"
+          min="0"
+          max={remainingStockOfProduct}
+          name="amt"
+          value={typedAmt === 0 ? "" : typedAmt}
+          onChange={(e) =>
+            handleChange(
+              e,
+              product,
+              cartDisplay,
+              cartItems,
+              setCartItems,
+              remainingStockOfProduct,
+              setShortStock,
+              setTypedAmt,
+              setShowModal
+            )
+          }
+        />
+      )}
+      <div className="inc-dec">
+        <button type="button">
+          <Plus size={18} strokeWidth={2} />
+        </button>
+        <button type="button">
+          <Minus size={18} strokeWidth={2} />
+        </button>
+      </div>
       <button
         onClick={() =>
           handleClick(
@@ -161,5 +239,3 @@ function UpdateCart({
     </div>
   );
 }
-
-export default UpdateCart;
