@@ -1,90 +1,7 @@
 import { useState } from "react";
 import "../styles/App.css";
 import PropTypes from "prop-types";
-
-function handleClick(
-  newValue,
-  product,
-  cartItems,
-  setCartItems,
-  setTypedAmt,
-  setShowModal
-) {
-  console.log({ newValue });
-  if (isNaN(newValue) || newValue === 0) {
-    newValue = 1; //assume user meant to add one item to the cart
-  }
-  let newCart = updateProd(newValue, cartItems, product.id, product.amtInStock);
-
-  setTypedAmt(0);
-  setCartItems(newCart);
-  //show success dialog
-  setShowModal({ ...product, amt: newValue });
-}
-// if stock total is 5, cart is 0, user types 2, then cart will say amt is 2 + 0 = 2, remainingInStock = 5 - 2 = 3
-// if stock total is 5, cart is 2, user types 1, then cart will say amt is 1 + 2 = 3, remainingInStock = 3 - 1 = 2
-/**
- *
- * @param {*} value - the value the user typed in if it is valid only (don't pass in invalid values)
- * @param {*} cartItems - the current array of items in the cart
- * @param {*} prodId - the product.id that represents the product the user is clicking Add To Cart on
- * @param {*} originalAmtInStock - the amount in stock we originally "fetched"
- * @returns - an array of new cart items with the specific product amount updated within it, which can be passed to setCartItems
- */
-function updateProd(value, cartItems, prodId, originalAmtInStock) {
-  const amtInCart = getAmtInCart(cartItems, prodId);
-
-  let newCart = cartItems.filter((el) => el.id !== prodId);
-  let updatedProdArr = cartItems.filter((el) => el.id === prodId);
-  if (updatedProdArr.length === 1) {
-    let currentStock = updatedProdArr[0].remainingStock;
-    let updatedProd = {
-      ...updatedProdArr[0],
-      amt: value + amtInCart,
-      remainingStock: currentStock - value,
-    };
-    newCart.push(updatedProd);
-  } else {
-    newCart.push({
-      id: prodId,
-      amt: value + amtInCart,
-      remainingStock: originalAmtInStock - value,
-    });
-  }
-  return newCart;
-}
-
-/**
- *
- * @param {*} e
- * @param {*} product
- * @param {*} cartItems
- * @param {*} setShortStock
- * @param {*} setTypedAmt
- */
-function handleChange(e, currAmtInStock, setShortStock, setTypedAmt) {
-  const newValue = Number(e.target.value);
-
-  if (newValue !== 0) {
-    // if the user tries to type a number great than amtInStock or a number greater than the total of amtInStock plus the number of in the cart then, that's invalid
-    if (newValue > currAmtInStock) {
-      setShortStock(true);
-    } else {
-      setShortStock(false);
-    }
-  }
-
-  setTypedAmt(newValue);
-}
-
-function getAmtInCart(cartItems, id) {
-  let amt = 0;
-  let itemArr = cartItems.filter((el) => el.id === id);
-  if (itemArr.length === 1) {
-    amt = itemArr[0].amt;
-  }
-  return amt;
-}
+import UpdateCart from "./UpdateCart.jsx";
 
 /**
  * gets the remaining stock value from the cart object
@@ -104,13 +21,14 @@ function getRemainingStock(cartItems, id) {
 }
 
 ProductCard.propTypes = {
+  type: PropTypes.string.isRequired,
   product: PropTypes.object.isRequired,
   cartItems: PropTypes.array.isRequired,
   setCartItems: PropTypes.func.isRequired,
   setShowModal: PropTypes.func.isRequired,
 };
 
-function ProductCard({ product, cartItems, setCartItems, setShowModal }) {
+function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
   const [shortStock, setShortStock] = useState(false);
 
   const [typedAmt, setTypedAmt] = useState(0);
@@ -120,9 +38,6 @@ function ProductCard({ product, cartItems, setCartItems, setShowModal }) {
   let highlightColor = "#c4f7fcff";
 
   const isOutOfStock = (product, cartItems) => {
-    console.log("In isOutOfStock");
-    console.log("product: ", product);
-    console.log("cartItems: ", cartItems);
     return (
       product.amtInStock === 0 || getRemainingStock(cartItems, product.id) === 0
     );
@@ -177,8 +92,12 @@ function ProductCard({ product, cartItems, setCartItems, setShowModal }) {
     remainingStockOfProduct !== -1
       ? remainingStockOfProduct
       : product.amtInStock;
+
+  // either type is shop (from the shopping page) or the type is 'cart' from the cart page
+  const shopPage = type === "shop";
+
   return (
-    <div className="card">
+    <div className={shopPage ? "card" : "cart-cell"}>
       <img src={product.image} alt={product.title} />
 
       <p>{product.title}</p>
@@ -188,41 +107,24 @@ function ProductCard({ product, cartItems, setCartItems, setShowModal }) {
         {makeStars(product.rating)}
       </div>
       <p className="bigger">${product.price}</p>
-      <p className="availability">
-        {isOutOfStock(product, cartItems) ? outOfStockMsg : freeDeliveryMsg}
-      </p>
-      <div className="input-amt" id={product.id}>
-        <input
-          step="1"
-          type="number"
-          inputMode="numeric"
-          pattern="\d*"
-          min="0"
-          max={remainingStockOfProduct}
-          name="amt"
-          value={typedAmt === 0 ? "" : typedAmt}
-          onChange={(e) =>
-            handleChange(e, remainingStockOfProduct, setShortStock, setTypedAmt)
-          }
-        />
-
-        <button
-          onClick={() =>
-            handleClick(
-              typedAmt,
-              product,
-              cartItems,
-              setCartItems,
-              setTypedAmt,
-              setShowModal
-            )
-          }
-          type="button"
-          disabled={shortStock || isOutOfStock(product, cartItems)}
-        >
-          Add to Cart
-        </button>
-      </div>
+      {shopPage && (
+        <p className="availability">
+          {isOutOfStock(product, cartItems) ? outOfStockMsg : freeDeliveryMsg}
+        </p>
+      )}
+      <UpdateCart
+        cartDisplay={shopPage ? false : true}
+        product={product}
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+        setShowModal={setShowModal}
+        shortStock={shortStock}
+        isOutOfStock={isOutOfStock}
+        typedAmt={typedAmt}
+        remainingStockOfProduct={remainingStockOfProduct}
+        setShortStock={setShortStock}
+        setTypedAmt={setTypedAmt}
+      />
 
       <p
         className={shortStock ? "invalid-amt" : "hidden"}

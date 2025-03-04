@@ -1,5 +1,5 @@
 import "../styles/App.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
 import PropTypes from "prop-types";
@@ -11,13 +11,13 @@ Nav.propTypes = {
 function Nav({ cartItems, setCartItems }) {
   return (
     <nav>
-      <div id="logo">
+      <Link to="/home" id="logo">
         <span>z</span>
         <div id="mid-logo">
           <p>hana</p>
         </div>
         <span>n</span>
-      </div>
+      </Link>
       <ul>
         <li>
           <NavLink

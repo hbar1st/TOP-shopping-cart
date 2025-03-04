@@ -1,7 +1,13 @@
 import { useRef, useEffect } from "react";
-
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-export default function Modal({ showModal, onClose, children }) {
+
+Modal.propTypes = {
+  showModal: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+export default function Modal({ showModal, onClose }) {
   const ref = useRef();
 
   useEffect(() => {

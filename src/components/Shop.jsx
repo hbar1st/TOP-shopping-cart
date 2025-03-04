@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
 import { useOutletContext } from "react-router-dom";
 
-import { createPortal } from "react-dom";
 import Modal from "./Modal.jsx";
 
 const useStoreProducts = () => {
@@ -77,6 +76,7 @@ function Shop() {
    * @param {*} id
    * @returns -1 if this product is not in the cart
    */
+  /*
   function getRemainingStock(cartItems, id) {
     //TODO this code is repeated here and in ProductCard. You should just pass it down!!
     let amt = 0;
@@ -87,11 +87,12 @@ function Shop() {
       return -1;
     }
     return amt;
-  }
+  }*/
 
   const productCards = storeProducts.map((product) => {
     return (
       <ProductCard
+        type="shop"
         key={product.id}
         product={{
           ...product,

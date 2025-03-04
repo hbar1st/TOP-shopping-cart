@@ -179,8 +179,11 @@ main {
   }
   > #rating {
     font-weight: 600;
+    position: relative;
+    top: -3px;
     display: flex;
     gap: 5px;
+    letter-spacing: 1px;
   }
 }
 
@@ -200,6 +203,23 @@ main {
   grid-auto-rows: auto minmax(3lh, auto) auto auto auto auto auto auto;
   padding: 2px 16px;
   gap: 1rem;
+}
+
+.cart-items-container {
+  display: grid;
+  background-color: inherit;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  grid-template-rows: auto;
+  grid-template-columns: auto;
+  grid-auto-flow: row;
+  padding: initial;
+  gap: 1rem;
+
+  > .cart-cell {
+    margin: 0;
+  }
 }
 
 .relative {
@@ -354,4 +374,71 @@ dialog {
 dialog::backdrop {
   background-color: var(--background-color);
   opacity: 80%;
+}
+
+#cart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+
+  background-color: white;
+  padding: 1rem;
+
+  > header {
+    color: black;
+  }
+  & div {
+    background-color: white;
+    color: black;
+  }
+  > p {
+    align-self: center;
+    color: black;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.button-panel {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  max-height: max-content;
+  padding: 1rem;
+  color: black;
+  background-color: white;
+  min-width: max-content;
+
+  > p {
+    font-weight: 600;
+  }
+}
+.cart-cell {
+  border-top: 1px solid gray;
+  width: 100%;
+  margin: 0px 1rem;
+  padding: 1rem 0;
+
+  > img {
+    width: min(25%, 100px);
+  }
+
+  > p:first-child {
+    font-size: 1.3rem;
+  }
+}
+
+#cart-page {
+  display: flex;
+  background-color: var(--highlight-color);
+
+  > * {
+    margin: 1rem;
+    border: 1px inset var(--background-color);
+  }
 }
