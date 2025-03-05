@@ -1,6 +1,6 @@
 import "../styles/App.css";
 import PropTypes from "prop-types";
-
+import InputAmt from "./InputAmt.jsx";
 import { Plus, Minus } from "lucide-react";
 
 // this button acts as a delete if it is shown in the cart page
@@ -22,7 +22,7 @@ function handleClick(
     if (isNaN(newValue) || newValue === 0) {
       newValue = 1; //assume user meant to add one item to the cart
     }
-    let newCart = updateProd(newValue, cartItems, product);
+    let newCart = updateProd(false, newValue, cartItems, product);
 
     setTypedAmt(0);
     setCartItems(newCart);
@@ -44,24 +44,25 @@ function getAmtInCart(cartItems, id) {
 // if stock total is 5, cart is 2, user types 1, then cart will say amt is 1 + 2 = 3, remainingInStock = 3 - 1 = 2
 /**
  *
+ * @param {*} cartDisplay - if true, then the value is used as is, otherwise add the value to the amt in the cart
  * @param {*} value - the value the user typed in if it is valid only (don't pass in invalid values)
  * @param {*} cartItems - the current array of items in the cart
  * @param {*} product - the product object
  * @returns - an array of new cart items with the specific product amount updated within it, which can be passed to setCartItems
  */
-function updateProd(value, cartItems, product) {
+function updateProd(cartDisplay, value, cartItems, product) {
   const prodId = product.id;
   const originalAmtInStock = product.amtInStock;
   const amtInCart = getAmtInCart(cartItems, prodId);
 
-  //let newCart = cartItems.filter((el) => el.id !== prodId);
   let updatedProdArr = cartItems.filter((el) => el.id === prodId);
   let cart = [...cartItems];
+  let newValue = cartDisplay ? value : value + amtInCart;
   cart.forEach((el, i) => {
     if (el.id === product.id) {
       let prod = {
         ...el,
-        amt: value + amtInCart,
+        amt: newValue,
         remainingStock: el.remainingStock - value,
       };
       cart[i] = prod;
@@ -71,13 +72,95 @@ function updateProd(value, cartItems, product) {
     {
       cart.push({
         ...product,
-        amt: value + amtInCart,
+        amt: newValue,
         remainingStock: originalAmtInStock - value,
       });
     }
   }
 
   return cart;
+}
+
+function handlePlusClick(
+  cartDisplay,
+  cartItems,
+  setCartItems,
+  product,
+  typedAmt,
+  setTypedAmt,
+  remainingStock,
+  setShortStock
+) {
+  let amt = Number(typedAmt);
+  if (isNaN(amt)) {
+    amt = 0;
+  }
+  if (amt < remainingStock) {
+    amt > 0 ? setTypedAmt(++amt) : setTypedAmt(1);
+    setShortStock(false);
+  }
+
+  if (cartDisplay && amt > 0 && amt <= remainingStock) {
+    //valid amount so we can safely update the cart
+    let newCart = updateProd(cartDisplay, amt, cartItems, product);
+    setCartItems(newCart);
+  }
+  if (cartDisplay && amt === 0) {
+    // effectively delete the item from the cart
+    let fakeFunc = () => {};
+    handleClick(
+      cartDisplay,
+      amt,
+      product,
+      cartItems,
+      setCartItems,
+      setTypedAmt,
+      fakeFunc
+    );
+  }
+}
+
+function handleMinusClick(
+  cartDisplay,
+  cartItems,
+  setCartItems,
+  product,
+  typedAmt,
+  setTypedAmt,
+  remainingStock,
+  setShortStock
+) {
+  let amt = Number(typedAmt);
+  if (isNaN(amt)) {
+    amt = 0;
+  }
+  if (amt > 0) {
+    setTypedAmt(--amt);
+    if (amt <= remainingStock) {
+      setShortStock(false);
+    }
+  } else {
+    setTypedAmt(0);
+  }
+
+  if (cartDisplay && amt > 0 && amt <= remainingStock) {
+    //valid amount so we can safely update the cart
+    let newCart = updateProd(cartDisplay, amt, cartItems, product);
+    setCartItems(newCart);
+  }
+  if (cartDisplay && amt === 0) {
+    //effectively delete this item from the cart
+    let fakeFunc = () => {};
+    handleClick(
+      cartDisplay,
+      amt,
+      product,
+      cartItems,
+      setCartItems,
+      setTypedAmt,
+      fakeFunc
+    );
+  }
 }
 
 /**
@@ -142,6 +225,7 @@ UpdateCart.propTypes = {
   remainingStockOfProduct: PropTypes.number.isRequired,
   setShortStock: PropTypes.func.isRequired,
   setTypedAmt: PropTypes.func.isRequired,
+  getRemainingStock: PropTypes.func.isRequired,
 };
 
 export default function UpdateCart({
@@ -156,65 +240,81 @@ export default function UpdateCart({
   remainingStockOfProduct,
   setShortStock,
   setTypedAmt,
+  getRemainingStock,
 }) {
+  let remainingStock = getRemainingStock(cartItems, product.id);
+  if (remainingStock === -1 || cartDisplay) {
+    remainingStock = product.amtInStock;
+  }
+
   return (
     //TODO adjust display for cartDisplay true as below is for shop display configuration
     <div className="input-amt" id={product.id}>
       {cartDisplay ? (
-        <input
-          step="1"
-          type="number"
-          inputMode="numeric"
-          pattern="\d*"
-          min="0"
-          max={product.amtInStock}
-          name="amt"
+        <InputAmt
           value={getAmtInCart(cartItems, product.id)}
-          onChange={(e) =>
-            handleChange(
-              e,
-              product,
-              cartDisplay,
-              cartItems,
-              setCartItems,
-              remainingStockOfProduct,
-              setShortStock,
-              setTypedAmt,
-              setShowModal
-            )
-          }
-        ></input>
+          max={product.amtInStock}
+          product={product}
+          cartDisplay={cartDisplay}
+          cartItems={cartItems}
+          setCartItems={setCartItems}
+          setShortStock={setShortStock}
+          setShowModal={setShowModal}
+          remainingStockOfProduct={remainingStockOfProduct}
+          handleChange={handleChange}
+          setTypedAmt={setTypedAmt}
+        />
       ) : (
-        <input
-          step="1"
-          type="number"
-          inputMode="numeric"
-          pattern="\d*"
-          min="0"
-          max={remainingStockOfProduct}
-          name="amt"
+        <InputAmt
           value={typedAmt === 0 ? "" : typedAmt}
-          onChange={(e) =>
-            handleChange(
-              e,
-              product,
-              cartDisplay,
-              cartItems,
-              setCartItems,
-              remainingStockOfProduct,
-              setShortStock,
-              setTypedAmt,
-              setShowModal
-            )
-          }
+          max={remainingStockOfProduct}
+          product={product}
+          cartDisplay={cartDisplay}
+          cartItems={cartItems}
+          setCartItems={setCartItems}
+          setShortStock={setShortStock}
+          setShowModal={setShowModal}
+          remainingStockOfProduct={remainingStockOfProduct}
+          handleChange={handleChange}
+          setTypedAmt={setTypedAmt}
         />
       )}
       <div className="inc-dec">
         <button type="button">
-          <Plus size={18} strokeWidth={2} />
+          <Plus
+            size={18}
+            strokeWidth={2}
+            onClick={() =>
+              handlePlusClick(
+                cartDisplay,
+                cartItems,
+                setCartItems,
+                product,
+                cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
+                setTypedAmt,
+                remainingStock,
+                setShortStock
+              )
+            }
+          />
         </button>
         <button type="button">
-          <Minus size={18} strokeWidth={2} />
+          <Minus
+            size={18}
+            strokeWidth={2}
+            onClick={() =>
+              handleMinusClick(
+                cartDisplay,
+                cartItems,
+                setCartItems,
+                product,
+                cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
+                setTypedAmt,
+                remainingStock,
+                setShortStock
+              )
+            }
+          />
         </button>
       </div>
       <button

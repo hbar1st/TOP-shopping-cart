@@ -124,6 +124,7 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
         remainingStockOfProduct={remainingStockOfProduct}
         setShortStock={setShortStock}
         setTypedAmt={setTypedAmt}
+        getRemainingStock={getRemainingStock}
       />
 
       <p

@@ -33,7 +33,7 @@ function Cart() {
         {cartItems.length > 0 ? (
           <div className="cart-items-container">{productCards}</div>
         ) : (
-          <p className="cart-cell">Nothing in cart.</p>
+          <p className="cart-cell">Your cart is empty.</p>
         )}
       </div>
 

@@ -70,25 +70,6 @@ function Shop() {
       </p>
     );
 
-  /**
-   *
-   * @param {*} cartItems
-   * @param {*} id
-   * @returns -1 if this product is not in the cart
-   */
-  /*
-  function getRemainingStock(cartItems, id) {
-    //TODO this code is repeated here and in ProductCard. You should just pass it down!!
-    let amt = 0;
-    let itemArr = cartItems.filter((el) => el.id === id);
-    if (itemArr.length === 1) {
-      amt = itemArr[0].remainingStock;
-    } else {
-      return -1;
-    }
-    return amt;
-  }*/
-
   const productCards = storeProducts.map((product) => {
     return (
       <ProductCard
