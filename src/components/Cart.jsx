@@ -46,6 +46,7 @@ function Cart() {
           <button
             type="button"
             onClick={() => {
+              setCartItems([]);
               navigate("/thanks");
             }}
           >
@@ -54,6 +55,7 @@ function Cart() {
           <button
             type="button"
             onClick={() => {
+              setCartItems([]);
               navigate("/thanks");
             }}
           >

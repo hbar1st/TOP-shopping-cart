@@ -162,7 +162,6 @@ main {
 .card {
   background-color: white;
   border-radius: 22px;
-  /*max-width: clamp(300px, 300px, 90%);*/
   border: 2px solid white;
   padding: 1rem;
   overflow: hidden;
@@ -195,10 +194,13 @@ main {
 .card-container {
   display: grid;
   align-items: center;
-  justify-items: center;
-  justify-content: center;
+  justify-items: stretch;
+  justify-content: space-evenly;
   grid-template-rows: auto;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 18%));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(250px, clamp(15%, calc(calc(max(1250px, 60vw) - 3rem) / 4), 20%))
+  );
   grid-auto-flow: row;
   grid-auto-rows: auto minmax(3lh, auto) auto auto auto auto auto auto;
   padding: 2px 16px;
@@ -279,13 +281,6 @@ h2 {
   }
 }
 
-input:active,
-input:focus,
-input:focus-visible,
-input:focus-within {
-  border-style: dotted;
-  
-}
 .invalid-amt {
   color: red;
 }
@@ -463,16 +458,16 @@ dialog::backdrop {
   justify-content: space-between;
 
   & button {
-    box-sizing: border-box;
+    display: flex;
     background: none;
-    border: none;
     outline: none;
+    border: none;
     color: black;
     width: min-content;
     aspect-ratio: 1;
     padding: 1px;
     border-radius: 0%;
-    border: 1px dotted black;
+    border: 2px dotted rgb(133, 133, 133);
     border-left: 0px;
   }
 
@@ -480,8 +475,22 @@ dialog::backdrop {
     background-color: #f2afe438;
     transform: scale(1.1);
   }
+
+  & button:focus {
+    border-style: double;
+  }
 }
 
 input:has(~ .inc-dec button:hover) {
   background-color: #f2afe438;
+}
+
+input:has(~ .inc-dec button:focus) {
+  border-style: groove;
+}
+input:active,
+input:focus,
+input:focus-visible,
+input:focus-within {
+  border-style: groove;
 }

@@ -21,7 +21,6 @@ export default function Modal({ showModal, onClose }) {
   return (
     <dialog ref={ref} onCancel={onClose}>
       <div>
-        <button onClick={onClose}>Close</button>
         <div>
           <h2>Added to cart:</h2>
           <p>{showModal.title}</p>
@@ -32,6 +31,8 @@ export default function Modal({ showModal, onClose }) {
               <Link to="/cart">
                 <button>Go to cart</button>
               </Link>
+
+              <button onClick={onClose}>Continue Shopping</button>
             </div>
           </div>
         </div>
