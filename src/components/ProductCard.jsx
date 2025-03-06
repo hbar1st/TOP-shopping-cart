@@ -58,6 +58,7 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
       let key = self.crypto.randomUUID();
       stars.push(
         <svg
+          aria-hidden
           key={key}
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -98,11 +99,14 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
 
   return (
     <div className={shopPage ? "card" : "cart-cell"}>
-      <img src={product.image} alt={product.title} />
+      <img
+        src={product.image}
+        alt={product.title}
+      />
 
-      <p>{product.title}</p>
+      <p aria-hidden>{product.title}</p>
       <p>SKU # {product.id}</p>
-      <div id="rating">
+      <div id="rating" aria-label="product rating">
         <span>{product.rating}</span>
         {makeStars(product.rating)}
       </div>

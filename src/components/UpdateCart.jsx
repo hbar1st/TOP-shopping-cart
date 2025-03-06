@@ -280,8 +280,9 @@ export default function UpdateCart({
         />
       )}
       <div className="inc-dec">
-        <button type="button">
+        <button type="button" aria-label="add 1">
           <Plus
+            aria-hidden
             size={18}
             strokeWidth={2}
             onClick={() =>
@@ -298,8 +299,9 @@ export default function UpdateCart({
             }
           />
         </button>
-        <button type="button">
+        <button type="button" aria-label="subtract 1">
           <Minus
+            aria-hidden
             size={18}
             strokeWidth={2}
             onClick={() =>

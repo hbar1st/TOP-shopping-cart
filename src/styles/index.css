@@ -15,7 +15,7 @@
 
 a {
   font-weight: 500;
-  color: white;
+  color: var(--font-color);
   text-decoration: inherit;
 }
 
@@ -55,16 +55,29 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+:root {
+  --border-color: #a6f9fd;
+  --highlight-color: #c4f7fcff;
+  --background-color: #17263c;
+  --stroke-color: white;
+  --font-color: white;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
+    --border-color: #213547;
     color: #213547;
-    background-color: #ffffff;
+    --font-color: #213547;
+    background-color: #fffdd5;
+    --background-color: #fffdd5;
+    --highlight-color: rgb(56, 104, 108);
+    --stroke-color: black;
   }
   a:hover {
-    color: #747bff;
+    color: #ff74a7;
   }
   button {
-    background-color: #f9f9f9;
+    color: #f9f9f9;
   }
 }
 

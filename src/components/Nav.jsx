@@ -6,19 +6,31 @@ import PropTypes from "prop-types";
 
 Nav.propTypes = {
   cartItems: PropTypes.array.isRequired,
-  setCartItems: PropTypes.func.isRequired,
 };
-function Nav({ cartItems, setCartItems }) {
+function Nav({ cartItems }) {
+  const cartItemCount = cartItems.reduce((acc, el) => acc + el.amt, 0);
   return (
     <nav>
-      <Link to="/home" id="logo">
-        <span>z</span>
-        <div id="mid-logo">
+      <Link
+        to="/home"
+        id="logo"
+        aria-label="Hanazon logo"
+        aria-description="Hanazon logo and home page link"
+      >
+        <span aria-hidden>z</span>
+        <div aria-hidden id="mid-logo">
           <p>hana</p>
         </div>
-        <span>n</span>
+        <span aria-hidden>n</span>
+        <span
+          className="hidden"
+          aria-hidden
+          aria-description="logo and home page link"
+        >
+          Hanazon
+        </span>
       </Link>
-      <ul>
+      <ul role="menubar">
         <li>
           <NavLink
             to="/home"
@@ -43,15 +55,16 @@ function Nav({ cartItems, setCartItems }) {
 
         <li>
           <NavLink
+            aria-label={`${cartItemCount} items in cart`}
             to="/cart"
             className={({ isActive, isPending }) =>
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            <div className="cart">
+            <div className="cart" aria-hidden>
               <ShoppingCart color="white" size={24}></ShoppingCart>
               <div className="counter">
-                <span>{cartItems.reduce((acc, el) => acc + el.amt, 0)}</span>
+                <span>{cartItemCount}</span>
               </div>
             </div>
           </NavLink>

@@ -12,7 +12,7 @@ function App() {
 
   return (
     <>
-      <Nav cartItems={cartItems} setCartItems={setCartItems} />
+      <Nav cartItems={cartItems} />
       <Navigate to="/home" replace />
       <main>
         <Outlet

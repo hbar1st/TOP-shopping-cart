@@ -1,11 +1,12 @@
 import "../styles/App.css";
 import { useNavigate } from "react-router";
-
+import { useRef, useEffect } from "react";
 import ProductCard from "./ProductCard.jsx";
 import { useOutletContext } from "react-router-dom";
 
 function Cart() {
   const { cartItems, setCartItems } = useOutletContext();
+  const buttonPanelRef = useRef(null);
   let navigate = useNavigate();
 
   const productCards = cartItems.map((product) => {
@@ -24,8 +25,18 @@ function Cart() {
   });
 
   const total = cartItems.reduce((acc, el) => acc + el.price, 0).toFixed(2);
+
+  useEffect(() => {
+    if (total > 0) {
+      buttonPanelRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [total]);
+
   return (
-    <div id="cart-page">
+    <div id="cart-page" aria-flowto="checkout">
       <div id="cart">
         <header>
           <h2>Shopping Cart</h2>
@@ -38,7 +49,7 @@ function Cart() {
       </div>
 
       {cartItems.length > 0 && (
-        <div className="button-panel">
+        <div ref={buttonPanelRef} className="button-panel" id="checkout">
           <p>
             Subtotal ({cartItems.reduce((acc, el) => acc + el.amt, 0)} items): $
             {total}

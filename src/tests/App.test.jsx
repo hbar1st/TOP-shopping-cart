@@ -1,13 +1,29 @@
 import { describe, it, expect } from "vitest";
 
-import { render, screen } from '@testing-library/react';
+import { render, within, screen } from "@testing-library/react";
 
-
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
-import App from '../components/App';
+import App from "../components/App";
 
-/** 
+describe("App", () => {
+  it("renders nav", () => {
+    const { getByRole } = render(<App />, { wrapper: BrowserRouter });
+    screen.debug();
+
+    // check if App components renders nav element
+    const nav = getByRole("navigation");
+
+    expect(nav).toBeInTheDocument();
+    const logoLinks = within(nav).getAllByRole("link");
+    expect(logoLinks).toHaveLength(4)
+    console.log(logoLinks);
+    //expect(.textContent).toMatch(/our first test/i);
+  });
+});
+
+/**
  * Sample tests below
  */
 /*
@@ -21,17 +37,8 @@ describe("something truthy and falsy", () => {
   });
 });
 
-
-describe('App', () => {
-  it('renders headline', () => {
-    render(<App title="React" />);
-
-    screen.debug();
-
-    // check if App components renders headline
-  });
-});
-
+*/
+/*
 describe("App component", () => {
   it("renders correct heading", () => {
     render(<App />);

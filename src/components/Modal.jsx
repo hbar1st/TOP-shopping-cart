@@ -19,7 +19,7 @@ export default function Modal({ showModal, onClose }) {
   }, [showModal]);
 
   return (
-    <dialog ref={ref} onCancel={onClose}>
+    <dialog aria-modal="true" ref={ref} onCancel={onClose}>
       <div>
         <div>
           <h2>Added to cart:</h2>

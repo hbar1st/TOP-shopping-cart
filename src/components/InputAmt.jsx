@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "../styles/App.css";
 import PropTypes from "prop-types";
 
@@ -31,6 +30,8 @@ function InputAmt({
 }) {
   return (
     <input
+      aria-label="input amount"
+      aria-description="input field for amount of this item"
       step="1"
       type="number"
       inputMode="numeric"
