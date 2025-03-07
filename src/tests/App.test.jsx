@@ -2,16 +2,21 @@ import { describe, it, expect, vi } from "vitest";
 
 import { render, within, screen, waitFor } from "@testing-library/react";
 
-import { BrowserRouter, MemoryRouter } from "react-router-dom";
+import {
+  BrowserRouter,
+  RouterProvider,
+  MemoryRouter,
+  createMemoryRouter,
+} from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
 import App from "../components/App";
+import routes from "../routes.jsx";
 
 describe("App", () => {
   it("renders nav element", () => {
     const { getByRole } = render(<App />, { wrapper: BrowserRouter });
     const nav = getByRole("navigation");
-    screen.debug();
 
     // check if App components renders nav element
     expect(nav).toBeInTheDocument();
@@ -26,72 +31,13 @@ describe("App", () => {
   });
 
   it("full app rendering/navigating", async () => {
-    render(
-      <MemoryRouter initialEntries={["/home"]}>
-        <App />
-      </MemoryRouter>
-    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/", "/home"],
+      initialIndex: 1,
+    });
 
+    render(<RouterProvider router={router} />, { wrapper: MemoryRouter });
+    screen.debug();
     expect(screen.getByRole("heading")).toBeInTheDocument();
   });
 });
-/*
-    const mockedUsedNavigate = vi.fn();
-    vi.mock("react-router-dom", () => ({
-      ...vi.requireActual("react-router-dom"),
-      useNavigate: () => mockedUsedNavigate,
-    }));
-    */
-//expect(screen.getByText(/you are home/i)).toBeInTheDocument()
-
-/** 
-    await waitFor(() => {
-      expect(getByRolr('heading')).toBeInTheDocument()
-    },{ timeout: 5000 })
-    */
-
-/**
- * Sample tests below
- */
-/*
-describe("something truthy and falsy", () => {
-  it("true to be true", () => {
-    expect(true).toBe(true);
-    
-    //expect(.textContent).toMatch(/our first test/i);
-  });
-
-  it("false to be false", () => {
-    expect(false).toBe(false);
-  });
-});
-
-*/
-/*
-describe("App component", () => {
-  it("renders correct heading", () => {
-    render(<App />);
-    expect(screen.getByRole("heading").textContent).toMatch(/our first test/i);
-  });
-});
-
-
-describe("App component", () => {
-  it("renders magnificent monkeys", () => {
-    // since screen does not have the container property, we'll destructure render to obtain a container for this test
-    const { container } = render(<App />);
-    expect(container).toMatchSnapshot();
-  });
-
-  it("renders radical rhinos after button click", async () => {
-    const user = userEvent.setup();
-
-    render(<App />);
-    const button = screen.getByRole("button", { name: "Click Me" });
-
-    await user.click(button);
-
-    expect(screen.getByRole("heading").textContent).toMatch(/radical rhinos/i);
-  });
-});
-*/
