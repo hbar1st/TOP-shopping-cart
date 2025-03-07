@@ -46,7 +46,11 @@ function Home() {
         </h2>
       </header>
       <NavLink to="/shop">
-        <div className="poster-frame" ref={posterSliderRef}>
+        <div
+          aria-description="Hanazon poster slideshow"
+          className="poster-frame"
+          ref={posterSliderRef}
+        >
           <PosterSlider />
         </div>
       </NavLink>
