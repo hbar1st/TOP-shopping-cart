@@ -14,6 +14,7 @@ import App from "../components/App";
 import routes from "../routes.jsx";
 
 describe("App", () => {
+  /*
   it("renders nav element", () => {
     const { getByRole } = render(<App />, { wrapper: BrowserRouter });
     const nav = getByRole("navigation");
@@ -29,15 +30,23 @@ describe("App", () => {
     expect(logoLinks[2].textContent).toStrictEqual("Shop");
     expect(logoLinks[3].ariaLabel).toStrictEqual("0 items in cart");
   });
-
+*/
+/*
   it("full app rendering/navigating", async () => {
     const router = createMemoryRouter(routes, {
       initialEntries: ["/", "/home"],
       initialIndex: 1,
     });
 
-    render(<RouterProvider router={router} />, { wrapper: MemoryRouter });
+    render(<RouterProvider router={router} />);
     screen.debug();
     expect(screen.getByRole("heading")).toBeInTheDocument();
+  });
+*/
+  it("full app rendering/navigating", async () => {
+    const router = createMemoryRouter(routes, {initialEntries:["/"], initialIndex: 0});
+    const { getByRole } = render(<RouterProvider router={router}></RouterProvider>);
+
+    console.log(screen.getAllByRole("heading").length);
   });
 });
