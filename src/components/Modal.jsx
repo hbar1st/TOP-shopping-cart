@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 Modal.propTypes = {
   showModal: PropTypes.object.isRequired,

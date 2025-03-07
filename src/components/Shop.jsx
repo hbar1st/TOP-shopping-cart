@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/App.css";
 import ProductCard from "./ProductCard.jsx";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 
 import Modal from "./Modal.jsx";
 

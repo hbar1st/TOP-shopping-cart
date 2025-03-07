@@ -1,6 +1,6 @@
 import "../styles/App.css";
 import Nav from "./Nav.jsx";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate } from "react-router";
 
 import { useState } from "react";
 

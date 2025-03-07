@@ -3,7 +3,7 @@ import "../styles/App.css";
 import { useState, useRef, useEffect } from "react";
 import PosterSlider from "./PosterSlider.jsx";
 
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import { MoveRight } from "lucide-react";
 import { MoveDown } from "lucide-react";
 

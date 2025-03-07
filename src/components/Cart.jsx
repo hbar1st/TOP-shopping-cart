@@ -2,7 +2,7 @@ import "../styles/App.css";
 import { useNavigate } from "react-router";
 import { useRef, useEffect } from "react";
 import ProductCard from "./ProductCard.jsx";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 
 function Cart() {
   const { cartItems, setCartItems } = useOutletContext();

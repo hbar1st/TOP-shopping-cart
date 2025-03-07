@@ -2,22 +2,18 @@ import { describe, it, expect, vi } from "vitest";
 
 import { render, within, screen, waitFor } from "@testing-library/react";
 
-import {
-  BrowserRouter,
-  RouterProvider,
-  MemoryRouter,
-  createMemoryRouter,
-} from "react-router-dom";
+import { RouterProvider, createMemoryRouter } from "react-router-dom";
+import routes from "../routes";
 import userEvent from "@testing-library/user-event";
 
 import App from "../components/App";
-import routes from "../routes.jsx";
 
 describe("App", () => {
-  /*
   it("renders nav element", () => {
-    const { getByRole } = render(<App />, { wrapper: BrowserRouter });
+    const router = createMemoryRouter(routes, {initialEntries:["/"], initialIndex: 0});
+    const { getByRole } = render(<RouterProvider router={router}></RouterProvider>);
     const nav = getByRole("navigation");
+    screen.debug();
 
     // check if App components renders nav element
     expect(nav).toBeInTheDocument();
@@ -30,19 +26,7 @@ describe("App", () => {
     expect(logoLinks[2].textContent).toStrictEqual("Shop");
     expect(logoLinks[3].ariaLabel).toStrictEqual("0 items in cart");
   });
-*/
-/*
-  it("full app rendering/navigating", async () => {
-    const router = createMemoryRouter(routes, {
-      initialEntries: ["/", "/home"],
-      initialIndex: 1,
-    });
 
-    render(<RouterProvider router={router} />);
-    screen.debug();
-    expect(screen.getByRole("heading")).toBeInTheDocument();
-  });
-*/
   it("full app rendering/navigating", async () => {
     const router = createMemoryRouter(routes, {initialEntries:["/"], initialIndex: 0});
     const { getByRole } = render(<RouterProvider router={router}></RouterProvider>);

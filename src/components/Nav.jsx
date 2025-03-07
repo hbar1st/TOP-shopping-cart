@@ -1,5 +1,5 @@
 import "../styles/App.css";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link } from "react-router";
 import { ShoppingCart } from "lucide-react";
 
 import PropTypes from "prop-types";
