@@ -26,7 +26,7 @@ li {
   justify-content: flex-start;
   align-items: flex-start;
 }
-nav > ul {
+nav > menu {
   display: grid;
   grid-template-rows: auto 1px auto;
   grid-template-columns: repeat(3, auto);
@@ -501,4 +501,31 @@ input:focus-within {
 
 nav svg {
   stroke: var(--stroke-color);
+}
+
+summary {
+  font-weight: 500;
+}
+
+details {
+  font-size: 0.8rem;
+  margin: 0.5rem;
+}
+
+
+/**
+ * Visually hide an element, but leave it available for screen readers
+ * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
+ * @link http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+ * @link https://github.com/h5bp/main.css/issues/12#issuecomment-321106995
+ */
+ .visually-hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
 }

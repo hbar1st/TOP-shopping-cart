@@ -27,6 +27,10 @@ export default function Modal({ showModal, onClose }) {
           <div>
             <img src={showModal.image} alt={showModal.title} />
             <div>
+              <details>
+                <summary>Description</summary>
+                {showModal.description}
+              </details>
               <p>Amount: {showModal.amt}</p>
               <Link to="/cart">
                 <button>Go to cart</button>

@@ -99,10 +99,7 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
 
   return (
     <div className={shopPage ? "card" : "cart-cell"}>
-      <img
-        src={product.image}
-        alt={product.title}
-      />
+      <img src={product.image} alt={product.title} />
 
       <p aria-hidden>{product.title}</p>
       <p>SKU # {product.id}</p>

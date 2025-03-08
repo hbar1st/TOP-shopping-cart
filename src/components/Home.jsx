@@ -42,11 +42,17 @@ function Home() {
       <header>
         <h1>Welcome to Hanazon! The randomest shopping experience ever!</h1>
         <h2 id="start" ref={startRef}>
-          Click to start {portrait ? <MoveDown /> : <MoveRight />}
+          Click to start{" "}
+          {portrait ? (
+            <MoveDown data-testid="arrow" alt="arrow pointing down" />
+          ) : (
+            <MoveRight data-testid="arrow" alt="arrow pointing right" />
+          )}
         </h2>
       </header>
       <NavLink to="/shop">
         <div
+          aria-label="slideshow"
           aria-description="Hanazon poster slideshow"
           className="poster-frame"
           ref={posterSliderRef}
