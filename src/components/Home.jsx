@@ -15,9 +15,12 @@ function Home() {
   // respond to window resizing by changing the arrow icon displayed
   // as layout will either be horizontal or vertical (flex)
   useEffect(() => {
-    const handleResize = () => {
-      if (startRef.current && posterSliderRef.current) {
-        if (startRef.current.offsetTop < posterSliderRef.current.offsetTop) {
+    const startRefClone = startRef.current;
+    const posterRefClone = posterSliderRef.current;
+
+    const handleResize = (startRefClone, posterRefClone) => {
+      if (startRefClone && posterRefClone) {
+        if (startRefClone.offsetTop < posterRefClone.offsetTop) {
           if (!portrait) {
             setPortrait(true);
           }
@@ -29,11 +32,15 @@ function Home() {
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", () => {
+      handleResize(startRefClone, posterRefClone);
+    });
 
     // Clean up the event listener on component unmount
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", () => {
+        handleResize(startRefClone, posterRefClone);
+      });
     };
   }, [portrait, setPortrait]);
 
