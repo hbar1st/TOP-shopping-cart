@@ -95,7 +95,7 @@ function Shop() {
         <header>
           <h2>Shop till you drop!</h2>
         </header>
-        <div className="card-container">{productCards}</div>
+        <section className="card-container">{productCards}</section>
       </div>
     </>
   );

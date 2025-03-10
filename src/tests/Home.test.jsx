@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import React, { useRef, useState } from "react";
-import { render, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, fireEvent, waitFor, waitUntil, act } from "@testing-library/react";
 
 import { RouterProvider, createMemoryRouter } from "react-router";
 import routes from "../routes";
@@ -38,20 +38,29 @@ describe("Home", () => {
     let main = getByRole("main");
     expect(main.textContent).toStrictEqual("Gimme a minute to grab my bag...");
     /*
-    vi.waitUntil(() => {
+    waitUntil(() => {
       let header = getAllByRole("sectionheader");
       console.log(header.length);
+      expect(header.textContent).toBe("Shop till you drop!");
     });
     */
-    await act(async () => {
-      await vi.waitFor(
-        () => {
-          let header = getAllByRole("sectionheader");
-          console.log(header.length);
-        },
-        { timeout: 1000 }
-      );
-    });
+    let header;
+    waitFor(
+      () => {
+        header = getAllByRole("sectionheader");
+        console.log(header.textContent);
+
+        expect(header.textContent).toBe("Shop till you drop!");
+        
+        article = getAllByRole("article");
+        console.log(article.length);
+        expect(article.length).toBe(10);
+
+      },
+      { timeout: 1000 }
+    );
+
+    
   });
 
   it.skip("Check home page arrow icon", async () => {

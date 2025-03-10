@@ -98,7 +98,7 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
   const shopPage = type === "shop";
 
   return (
-    <div className={shopPage ? "card" : "cart-cell"}>
+    <article className={shopPage ? "card" : "cart-cell"}>
       <img src={product.image} alt={product.title} />
 
       <p aria-hidden>{product.title}</p>
@@ -135,7 +135,7 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
         Only {shopPage ? remainingStockOfProduct : product.amtInStock}{" "}
         available.
       </p>
-    </div>
+    </article>
   );
 }
 
