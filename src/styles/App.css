@@ -26,7 +26,7 @@ li {
   justify-content: flex-start;
   align-items: flex-start;
 }
-nav > menu {
+nav > ul {
   display: grid;
   grid-template-rows: auto 1px auto;
   grid-template-columns: repeat(3, auto);

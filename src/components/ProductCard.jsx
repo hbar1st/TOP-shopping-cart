@@ -29,7 +29,7 @@ ProductCard.propTypes = {
 };
 
 function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
-  const [shortStock, setShortStock] = useState(false);
+  const [shortStock, setShortStock] = useState([false, false]);
 
   const [typedAmt, setTypedAmt] = useState(0);
 
@@ -129,8 +129,8 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
       />
 
       <p
-        className={shortStock ? "invalid-amt" : "hidden"}
-        aria-hidden={!shortStock}
+        className={shortStock[0] ? "invalid-amt" : "hidden"}
+        aria-hidden={!shortStock[0]}
       >
         Only {shopPage ? remainingStockOfProduct : product.amtInStock}{" "}
         available.

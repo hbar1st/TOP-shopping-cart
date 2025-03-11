@@ -95,9 +95,13 @@ function handlePlusClick(
   if (isNaN(amt)) {
     amt = 0;
   }
+  if (amt === remainingStock) {
+    // show stock warning
+    setShortStock([true, false]);
+  }
   if (amt < remainingStock) {
     amt > 0 ? setTypedAmt(++amt) : setTypedAmt(1);
-    setShortStock(false);
+    setShortStock([false, false]);
   }
 
   if (cartDisplay && amt > 0 && amt <= remainingStock) {
@@ -137,7 +141,7 @@ function handleMinusClick(
   if (amt > 0) {
     setTypedAmt(--amt);
     if (amt <= remainingStock) {
-      setShortStock(false);
+      setShortStock([false, false]);
     }
   } else {
     setTypedAmt(0);
@@ -192,9 +196,9 @@ function handleChange(
       (!cartDisplay && newValue > currAmtInStock) ||
       (cartDisplay && newValue > product.amtInStock)
     ) {
-      setShortStock(true);
+      setShortStock([true, true]);
     } else {
-      setShortStock(false);
+      setShortStock([false, false]);
       // if in cart already then go ahead and add the difference between the old and new values to the cart
       if (cartDisplay) {
         handleClick(
@@ -219,7 +223,7 @@ UpdateCart.propTypes = {
   cartItems: PropTypes.array.isRequired,
   setCartItems: PropTypes.func.isRequired,
   setShowModal: PropTypes.func.isRequired,
-  shortStock: PropTypes.bool.isRequired,
+  shortStock: PropTypes.array.isRequired,
   isOutOfStock: PropTypes.func.isRequired,
   typedAmt: PropTypes.number.isRequired,
   remainingStockOfProduct: PropTypes.number.isRequired,
@@ -283,6 +287,7 @@ export default function UpdateCart({
         <button type="button" aria-label="add 1">
           <Plus
             aria-hidden
+            tabIndex={-1}
             size={18}
             strokeWidth={2}
             onClick={() =>
@@ -302,6 +307,7 @@ export default function UpdateCart({
         <button type="button" aria-label="subtract 1">
           <Minus
             aria-hidden
+            tabIndex={-1}
             size={18}
             strokeWidth={2}
             onClick={() =>
@@ -320,7 +326,8 @@ export default function UpdateCart({
         </button>
       </div>
       <button
-        onClick={() =>
+        onClick={() => {
+          setShortStock([false, false]);
           handleClick(
             cartDisplay,
             typedAmt,
@@ -329,11 +336,11 @@ export default function UpdateCart({
             setCartItems,
             setTypedAmt,
             setShowModal
-          )
-        }
+          );
+        }}
         type="button"
         disabled={
-          !cartDisplay && (shortStock || isOutOfStock(product, cartItems))
+          !cartDisplay && (shortStock[1] || isOutOfStock(product, cartItems))
         }
       >
         {cartDisplay ? "Delete" : "Add to Cart"}

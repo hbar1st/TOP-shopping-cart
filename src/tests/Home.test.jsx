@@ -25,6 +25,8 @@ describe("Home", () => {
   });
 
   it("Check link on slideshow", async () => {
+    
+    const user = userEvent.setup();
     const router = createMemoryRouter(routes, {
       initialEntries: ["/home"],
       initialIndex: 0,
@@ -33,28 +35,18 @@ describe("Home", () => {
       <RouterProvider router={router}></RouterProvider>
     );
     const links = getAllByRole("link");
-    const user = userEvent.setup();
     await user.click(links[4]);
     let main = getByRole("main");
     expect(main.textContent).toStrictEqual("Gimme a minute to grab my bag...");
-    /*
-    waitUntil(() => {
-      let header = getAllByRole("sectionheader");
-      console.log(header.length);
-      expect(header.textContent).toBe("Shop till you drop!");
-    });
-    */
-    let header;
-    waitFor(
-      () => {
-        header = getAllByRole("sectionheader");
-        console.log(header.textContent);
 
-        expect(header.textContent).toBe("Shop till you drop!");
+    await waitFor(
+      () => {
+        let heading = getByRole("heading");
+
+        expect(heading.textContent).toBe("Shop till you drop!");
         
-        article = getAllByRole("article");
-        console.log(article.length);
-        expect(article.length).toBe(10);
+        let article = getAllByRole("article");
+        expect(article.length).toBe(20);
 
       },
       { timeout: 1000 }

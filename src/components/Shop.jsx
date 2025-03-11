@@ -13,6 +13,7 @@ const useStoreProducts = () => {
   useEffect(() => {
     fetch("https://fakestoreapi.com/products")
       .then((res) => {
+        console.log(res);
         if (res.status >= 400) {
           throw new Error("server error");
         }
@@ -32,7 +33,7 @@ function processStoreProducts(json) {
   // each item in the store will be kept in state with the following values:
   // category, description, id, image url, price, rating, ratingCount, title, amtInStock
   // initially, all items will get a random number between 0 and 5 inclusive of amtInStock
-
+  console.log(json);
   let products = [];
   json.forEach(({ id, title, category, description, image, price, rating }) => {
     products.push({
@@ -84,7 +85,6 @@ function Shop() {
       ></ProductCard>
     );
   });
-
 
   return (
     <>
