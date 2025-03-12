@@ -177,4 +177,44 @@ describe("Shop page", () => {
     const input = within(article).queryByRole("spinbutton");
     expect(input).not.toBeInTheDocument();
   });
+
+  it("The Add 1 and Minus 1 buttons check", async () => {
+    const user = userEvent.setup();
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    // and ensure the stock is more than zero
+    vi.spyOn(Math, "random").mockReturnValue(0.5); //this will give us 3 items in stock
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve([products[0]]),
+      })
+    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole } = render(
+      <RouterProvider router={router}></RouterProvider>
+    );
+
+    const links = getAllByRole("link");
+    await user.click(links[2]); //goto the shop page
+
+    let article = getByRole("article");
+
+    const buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[1].ariaLabel).toBe("subtract 1");
+    expect(buttons[0].ariaLabel).toBe("add 1");
+
+    await user.click(buttons[0]); //try to add 1 to the input
+
+    const input = within(article).getByRole("spinbutton");
+    console.log(input);
+    const shortStockMsg = within(article).getByTestId("shortStockMsg");
+    const regex = /Only (?<number>\d+) available/i;
+    const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
+    //console.log(stockNumber);
+    expect(input.value).toBe(1);
+  });
 });
