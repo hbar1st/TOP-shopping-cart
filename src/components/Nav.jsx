@@ -30,7 +30,7 @@ function Nav({ cartItems }) {
           Hanazon
         </span>
       </Link>
-      <ul>
+      <ul role="group">
         <li>
           <NavLink
             to="/home"

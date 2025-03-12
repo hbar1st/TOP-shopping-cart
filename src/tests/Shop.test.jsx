@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import React, { useRef, useState } from "react";
+
+import { within } from "@testing-library/react";
 import {
   render,
   fireEvent,
@@ -13,7 +14,7 @@ import routes from "../routes";
 
 import userEvent from "@testing-library/user-event";
 
-describe("Shop pagef", () => {
+describe("Shop page", () => {
   let products = [
     {
       category: "women's clothing",
@@ -39,11 +40,17 @@ describe("Shop pagef", () => {
       title: "DANVOUY Womens T Shirt Casual Cotton Short",
     },
   ];
-  it("Add to cart", async () => {
+
+  it("Shop page display during network error", async () => {
     const user = userEvent.setup();
-    /*
+
+    vi.spyOn(Math, "random").mockReturnValue(0.8);
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    global.fetch = vi.fn().mockRejectedValue(new Error("Async error"));
+
     const router = createMemoryRouter(routes, {
-      initialEntries: ["/home"],
+      initialEntries: ["/"],
       initialIndex: 0,
     });
     const { getByRole, getAllByRole } = render(
@@ -51,20 +58,123 @@ describe("Shop pagef", () => {
     );
     const links = getAllByRole("link");
     await user.click(links[2]);
-    let main = getByRole("main");
-    expect(main.textContent).toStrictEqual("Gimme a minute to grab my bag...");
 
-    await waitFor(
-      () => {
-        let heading = getByRole("heading");
-
-        expect(heading.textContent).toBe("Shop till you drop!");
-
-        let article = getAllByRole("article");
-        expect(article.length).toBe(20);
-      },
-      { timeout: 1000 }
+    const content = getByRole("heading");
+    expect(content.textContent).toBe(
+      "Retail therapy aborted due to network error!"
     );
-    */
+  });
+
+  it("Product card display for in stock item", async () => {
+    const user = userEvent.setup();
+
+    vi.spyOn(Math, "random").mockReturnValue(0.8);
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve([products[0]]),
+      })
+    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole } = render(
+      <RouterProvider router={router}></RouterProvider>
+    );
+    const links = getAllByRole("link");
+    await user.click(links[2]);
+
+    let article = getByRole("article");
+
+    const productInputWidget = within(article).getByRole("group");
+    expect(productInputWidget.getAttribute("id")).toBe(`${products[0].id}`);
+
+    const productImg = within(article).getByRole("img");
+    expect(productImg.getAttribute("alt")).toBe(`${products[0].title}`);
+    expect(productImg.getAttribute("src")).toBe(`${products[0].image}`);
+
+    const productTitle = within(article).getByRole("heading");
+    expect(productTitle.textContent).toBe(`${products[0].title}`);
+
+    const productDetails = within(article).getAllByRole("paragraph");
+
+    expect(productDetails[0].textContent).toBe(`SKU # ${products[0].id}`);
+    expect(productDetails[1].textContent).toBe(`$${products[0].price}`);
+    const shortStockMsg = within(article).getByTestId("shortStockMsg");
+    const regex = /Only (?<number>\d+) available/i;
+    const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
+
+    expect(productDetails[2].textContent).toBe("Free Delivery");
+
+    const buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[2].textContent).toBe("Add to Cart");
+    expect(buttons[1].ariaLabel).toBe("subtract 1");
+    expect(buttons[0].ariaLabel).toBe("add 1");
+
+    const input = within(article).getByRole("spinbutton");
+    expect(input.min).toBe(`0`);
+    expect(input.max).toBe(`${stockNumber}`);
+    expect(input.required).toBe(false);
+    expect(input.value).toBe("");
+  });
+
+  it("Product card display for out of stock item", async () => {
+    const user = userEvent.setup();
+
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve([products[0]]),
+      })
+    );
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole } = render(
+      <RouterProvider router={router}></RouterProvider>
+    );
+    const links = getAllByRole("link");
+    await user.click(links[2]);
+
+    let article = getByRole("article");
+
+    const productInputWidget = within(article).getByRole("group");
+    expect(productInputWidget.getAttribute("id")).toBe(`${products[0].id}`);
+
+    const productImg = within(article).getByRole("img");
+    expect(productImg.getAttribute("alt")).toBe(`${products[0].title}`);
+    expect(productImg.getAttribute("src")).toBe(`${products[0].image}`);
+
+    const productTitle = within(article).getByRole("heading");
+    expect(productTitle.textContent).toBe(`${products[0].title}`);
+
+    const productDetails = within(article).getAllByRole("paragraph");
+
+    expect(productDetails[0].textContent).toBe(`SKU # ${products[0].id}`);
+    expect(productDetails[1].textContent).toBe(`$${products[0].price}`);
+
+    expect(productDetails[2].textContent).toBe("Out of Stock");
+
+    const buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+
+    expect(buttons[2].textContent).toBe("Add to Cart");
+    expect(buttons[2].disabled).toBe(true);
+
+    expect(buttons[1].ariaLabel).toBe("subtract 1");
+    expect(buttons[1].disabled).toBe(true);
+
+    expect(buttons[0].ariaLabel).toBe("add 1");
+    expect(buttons[0].disabled).toBe(true);
+
+    const input = within(article).queryByRole("spinbutton");
+    expect(input).not.toBeInTheDocument();
   });
 });

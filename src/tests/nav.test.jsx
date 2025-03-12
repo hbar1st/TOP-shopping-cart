@@ -30,9 +30,9 @@ describe("Nav links", () => {
 
     await waitFor(
       () => {
-        let heading = getByRole("heading");
+        let headings = getAllByRole("heading");
 
-        expect(heading.textContent).toBe("Shop till you drop!");
+        expect(headings[0].textContent).toBe("Shop till you drop!");
 
         let article = getAllByRole("article");
         expect(article.length).toBe(20);

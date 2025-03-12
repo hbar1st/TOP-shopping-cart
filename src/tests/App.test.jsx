@@ -27,4 +27,19 @@ describe("App", () => {
     expect(logoLinks[2].textContent).toStrictEqual("Shop");
     expect(logoLinks[3].ariaLabel).toStrictEqual("0 items in cart");
   });
+
+  it("bad route", () => {
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/bad"],
+      initialIndex: 0,
+    });
+    const { getByRole } = render(
+      <RouterProvider router={router}></RouterProvider>
+    );
+
+    let main = getByRole("main");
+    expect(main.textContent).toStrictEqual(
+      "Oh no, this route doesn't exist!You can go back to the home page by clicking here, though!"
+    );
+  });
 });

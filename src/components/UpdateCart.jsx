@@ -253,7 +253,7 @@ export default function UpdateCart({
 
   return (
     //TODO adjust display for cartDisplay true as below is for shop display configuration
-    <div className="input-amt" id={product.id}>
+    <div role="group" className="input-amt" id={product.id}>
       {cartDisplay ? (
         <InputAmt
           value={getAmtInCart(cartItems, product.id)}
@@ -284,7 +284,11 @@ export default function UpdateCart({
         />
       )}
       <div className="inc-dec">
-        <button type="button" aria-label="add 1">
+        <button
+          disabled={remainingStockOfProduct < 1}
+          type="button"
+          aria-label="add 1"
+        >
           <Plus
             aria-hidden
             tabIndex={-1}
@@ -304,7 +308,11 @@ export default function UpdateCart({
             }
           />
         </button>
-        <button type="button" aria-label="subtract 1">
+        <button
+          disabled={remainingStockOfProduct < 1}
+          type="button"
+          aria-label="subtract 1"
+        >
           <Minus
             aria-hidden
             tabIndex={-1}

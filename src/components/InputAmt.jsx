@@ -30,6 +30,8 @@ function InputAmt({
 }) {
   return (
     <input
+      disabled={remainingStockOfProduct < 1}
+      aria-hidden={remainingStockOfProduct < 1}
       aria-label="input amount"
       aria-description="input field for amount of this item"
       step="1"

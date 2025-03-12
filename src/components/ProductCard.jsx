@@ -96,15 +96,15 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
 
   // either type is shop (from the shopping page) or the type is 'cart' from the cart page
   const shopPage = type === "shop";
-
+  const stockValue = shopPage ? remainingStockOfProduct : product.amtInStock;
   return (
     <article className={shopPage ? "card" : "cart-cell"}>
       <img src={product.image} alt={product.title} />
 
-      <p aria-hidden>{product.title}</p>
-      <p>SKU # {product.id}</p>
-      <div id="rating" aria-label="product rating">
-        <span>{product.rating}</span>
+      <h2>{product.title}</h2>
+      <p>{`SKU # ${product.id}`}</p>
+      <div id="rating" aria-label={`product rating: ${product.rating} stars`}>
+        <span aria-hidden="true">{product.rating}</span>
         {makeStars(product.rating)}
       </div>
       <p className="bigger">${product.price}</p>
@@ -129,11 +129,11 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
       />
 
       <p
+        data-testid="shortStockMsg"
         className={shortStock[0] ? "invalid-amt" : "hidden"}
         aria-hidden={!shortStock[0]}
       >
-        Only {shopPage ? remainingStockOfProduct : product.amtInStock}{" "}
-        available.
+        {`Only ${stockValue} available`}
       </p>
     </article>
   );

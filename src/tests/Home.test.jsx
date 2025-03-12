@@ -41,9 +41,9 @@ describe("Home", () => {
 
     await waitFor(
       () => {
-        let heading = getByRole("heading");
+        let headers = getAllByRole("heading");
 
-        expect(heading.textContent).toBe("Shop till you drop!");
+        expect(headers[0].textContent).toBe("Shop till you drop!");
         
         let article = getAllByRole("article");
         expect(article.length).toBe(20);
