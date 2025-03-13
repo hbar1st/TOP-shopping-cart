@@ -45,4 +45,3 @@ export default function Modal({ showModal, onClose }) {
   );
 }
 
-// use {children} if you want to include the children of the modal from Shop.jsx

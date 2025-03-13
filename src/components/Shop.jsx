@@ -53,7 +53,6 @@ function processStoreProducts(json) {
 function Shop() {
   const { cartItems, setCartItems } = useOutletContext();
   const { storeProducts, error, loading } = useStoreProducts();
-
   const [showModal, setShowModal] = useState(null);
 
   if (loading)

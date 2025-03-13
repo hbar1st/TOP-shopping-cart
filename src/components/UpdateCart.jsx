@@ -288,49 +288,39 @@ export default function UpdateCart({
           disabled={remainingStockOfProduct < 1}
           type="button"
           aria-label="add 1"
+          onClick={() =>
+            handlePlusClick(
+              cartDisplay,
+              cartItems,
+              setCartItems,
+              product,
+              cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
+              setTypedAmt,
+              remainingStock,
+              setShortStock
+            )
+          }
         >
-          <Plus
-            aria-hidden
-            tabIndex={-1}
-            size={18}
-            strokeWidth={2}
-            onClick={() =>
-              handlePlusClick(
-                cartDisplay,
-                cartItems,
-                setCartItems,
-                product,
-                cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
-                setTypedAmt,
-                remainingStock,
-                setShortStock
-              )
-            }
-          />
+          <Plus aria-hidden tabIndex={-1} size={18} strokeWidth={2} />
         </button>
         <button
           disabled={remainingStockOfProduct < 1}
           type="button"
           aria-label="subtract 1"
+          onClick={() =>
+            handleMinusClick(
+              cartDisplay,
+              cartItems,
+              setCartItems,
+              product,
+              cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
+              setTypedAmt,
+              remainingStock,
+              setShortStock
+            )
+          }
         >
-          <Minus
-            aria-hidden
-            tabIndex={-1}
-            size={18}
-            strokeWidth={2}
-            onClick={() =>
-              handleMinusClick(
-                cartDisplay,
-                cartItems,
-                setCartItems,
-                product,
-                cartDisplay ? getAmtInCart(cartItems, product.id) : typedAmt,
-                setTypedAmt,
-                remainingStock,
-                setShortStock
-              )
-            }
-          />
+          <Minus aria-hidden tabIndex={-1} size={18} strokeWidth={2} />
         </button>
       </div>
       <button

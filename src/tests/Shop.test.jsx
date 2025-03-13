@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-
+import Modal from "../components/Modal.jsx";
 import { within } from "@testing-library/react";
+
 import {
   render,
   fireEvent,
@@ -9,7 +10,7 @@ import {
   act,
 } from "@testing-library/react";
 
-import { RouterProvider, createMemoryRouter } from "react-router";
+import { StaticRouter, RouterProvider, createMemoryRouter } from "react-router";
 import routes from "../routes";
 
 import userEvent from "@testing-library/user-event";
@@ -178,7 +179,9 @@ describe("Shop page", () => {
     expect(input).not.toBeInTheDocument();
   });
 
-  it("The Add 1 and Minus 1 buttons check", async () => {
+  it("The Add 1 and Minus 1 buttons check from Shop", async () => {
+    //buttons in the shop page behave differently than in the cart page! (watch out)
+
     const user = userEvent.setup();
 
     // Give our mock only one product to avoid confusion when confirming the product card contents
@@ -207,14 +210,71 @@ describe("Shop page", () => {
     expect(buttons[1].ariaLabel).toBe("subtract 1");
     expect(buttons[0].ariaLabel).toBe("add 1");
 
-    await user.click(buttons[0]); //try to add 1 to the input
-
-    const input = within(article).getByRole("spinbutton");
-    console.log(input);
     const shortStockMsg = within(article).getByTestId("shortStockMsg");
+
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
     const regex = /Only (?<number>\d+) available/i;
     const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
     //console.log(stockNumber);
-    expect(input.value).toBe(1);
+    for (let i = 0; i < stockNumber; i++) {
+      await user.click(buttons[0]); //try to add 1 to the input
+      const input = within(article).getByRole("spinbutton");
+      expect(input.value).toBe(`${i + 1}`);
+    }
+
+    await user.click(buttons[0]); //try to add 1 to the input to go above the max stock available
+    let input = within(article).getByRole("spinbutton");
+    expect(input.value).toBe(`${stockNumber}`);
+    expect("invalid-amt").toBeOneOf(Object.values(shortStockMsg.classList));
+
+    for (let i = stockNumber; i > 1; i--) {
+      await user.click(buttons[1]); //try to subtract 1 from the input value
+      const input = within(article).getByRole("spinbutton");
+      expect(input.value).toBe(`${i - 1}`);
+    }
+
+    await user.click(buttons[1]); //try to subtract the last 1 so the input goes blank
+    input = within(article).getByRole("spinbutton");
+    expect(input.value).toBe("");
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
+  });
+
+  it("Add To Cart check", async () => {
+    const user = userEvent.setup();
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    // and ensure the stock is more than zero
+    vi.spyOn(Math, "random").mockReturnValue(0.5); //this will give us 3 items in stock
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve([products[0]]),
+      })
+    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole } = render(
+      <RouterProvider router={router}></RouterProvider>
+    );
+
+    const links = getAllByRole("link");
+    await user.click(links[2]); //goto the shop page
+
+    let article = getByRole("article");
+
+    const buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[2].textContent).toBe("Add to Cart");
+
+    await user.click(buttons[2]); //attempt to add to the cart
+
+    const modalHeaders = getAllByRole("heading");
+    console.log(modalHeaders[0].textContent);
+    expect(modalHeaders.length).toBe(1);
+    /* check this after the modal check
+    input = within(article).getByRole("spinbutton");
+    expect(input.value).toBe("");
+    */
   });
 });
