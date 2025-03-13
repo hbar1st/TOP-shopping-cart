@@ -86,7 +86,7 @@ function Shop() {
   return (
     <>
       {showModal && (
-        <Modal onClose={() => setShowModal(null)} showModal={showModal}></Modal>
+        <Modal onClose={() => setShowModal(null)} showModalObj={showModal}></Modal>
       )}
       <div className="shop" id="main">
         <header>

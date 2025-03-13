@@ -3,35 +3,37 @@ import PropTypes from "prop-types";
 import { Link } from "react-router";
 
 Modal.propTypes = {
-  showModal: PropTypes.object.isRequired,
+  showModalObj: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-export default function Modal({ showModal, onClose }) {
+export default function Modal({ showModalObj, onClose }) {
   const ref = useRef();
 
   useEffect(() => {
-    if (showModal) {
-      ref.current?.showModal();
+    if (showModalObj) {
+      if (ref.current instanceof HTMLDialogElement) {
+        ref.current.showModal();
+      }
     } else {
       ref.current?.close();
     }
-  }, [showModal]);
+  }, [showModalObj]);
 
   return (
     <dialog aria-modal="true" ref={ref} onCancel={onClose}>
       <div>
         <div>
           <h2>Added to cart:</h2>
-          <p>{showModal.title}</p>
+          <p>{showModalObj.title}</p>
           <div>
-            <img src={showModal.image} alt={showModal.title} />
+            <img src={showModalObj.image} alt={showModalObj.title} />
             <div>
               <details>
                 <summary>Description</summary>
-                {showModal.description}
+                {showModalObj.description}
               </details>
-              <p>Amount: {showModal.amt}</p>
+              <p>Amount: {showModalObj.amt}</p>
               <Link to="/cart">
                 <button>Go to cart</button>
               </Link>
@@ -44,4 +46,3 @@ export default function Modal({ showModal, onClose }) {
     </dialog>
   );
 }
-
