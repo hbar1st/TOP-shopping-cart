@@ -225,7 +225,7 @@ describe("Shop page", () => {
     expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
     const regex = /Only (?<number>\d+) available/i;
     const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
-    //console.log(stockNumber);
+    
     for (let i = 0; i < stockNumber; i++) {
       await user.click(buttons[0]); //try to add 1 to the input
       const input = within(article).getByRole("spinbutton");

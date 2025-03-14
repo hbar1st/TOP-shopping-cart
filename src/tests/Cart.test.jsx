@@ -399,5 +399,104 @@ describe("Cart page", () => {
     );
   });
 
-  it.skip("Add or Subtract amounts from cart", async () => {});
+  it("Add or Subtract amounts from cart", async () => {
+    const user = userEvent.setup();
+
+    // Give our mock two products
+    // and ensure the stock is more than zero
+    vi.spyOn(Math, "random").mockReturnValue(0.5); //this will give us 3 items in stock
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(products),
+      })
+    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole, getByTestId } = render(
+      <RouterProvider router={router}>
+        <Nav cartItems={[products[0]]} />
+
+        <Modal onClose={() => {}} showModalObj={products[0]} />
+      </RouterProvider>
+    );
+
+    const links = getAllByRole("link");
+    await user.click(links[2]); //goto the shop page
+
+    let articles = getAllByRole("article");
+    expect(articles.length).toBe(2);
+
+    for (let i = 0; i < articles.length; i++) {
+      let buttons = within(articles[i]).getAllByRole("button");
+      expect(buttons.length).toBe(3);
+      const input = within(articles[i]).getByRole("spinbutton");
+      await user.type(input, "3");
+      expect(buttons[2].textContent).toBe("Add to Cart");
+
+      await user.click(buttons[2]); //attempt to add to the cart
+      const dialog = screen.getByTestId("modal");
+      expect(dialog.open).toBe(true);
+
+      buttons = within(dialog).getAllByRole("button");
+      expect(buttons.length).toBe(2);
+      expect(buttons[1].textContent).toBe("Continue Shopping");
+
+      const amount = within(dialog).getByText(`Amount: 3`);
+      await user.click(buttons[1]);
+    }
+
+    await user.click(links[3]); //go to the cart page
+
+    const cartArticles = getAllByRole("article");
+
+    //target the 2nd product for this testing
+    const buttons = within(cartArticles[1]).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[1].ariaLabel).toBe("subtract 1");
+    expect(buttons[0].ariaLabel).toBe("add 1");
+
+    const shortStockMsg = within(cartArticles[1]).getByTestId("shortStockMsg");
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
+    await user.click(buttons[0]); //try to add 1 to the input to go above the max stock available
+    let input = within(cartArticles[1]).getByRole("spinbutton");
+    expect(input.value).toBe("3");
+
+    const regex = /Only (?<number>\d+) available/i;
+    expect("invalid-amt").toBeOneOf(Object.values(shortStockMsg.classList));
+
+    await user.click(buttons[1]); //try to subtract 1 from the input value
+    expect(input.value).toBe(`2`);
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
+    //also the total amount of items in the cart should now be 5 (as we subtracted one)
+
+    const checkout = getByTestId("checkout");
+    const cartSummary = within(checkout).getByRole("paragraph");
+    expect(cartSummary.textContent).toBe(
+      `Subtotal (5 items): $${products[0].price * 3 + products[1].price * 2}`
+    );
+
+    await user.click(buttons[1]); //try to subtract another 1 from the input value leaving 1 of this item
+    expect(input.value).toBe("1");
+
+    await user.click(buttons[0]); //try to add  1 from the input value leaving 1 of this item
+    expect(input.value).toBe("2");
+
+    expect(cartSummary.textContent).toBe(
+      `Subtotal (5 items): $${products[0].price * 3 + products[1].price * 2}`
+    );
+
+    await user.click(buttons[1]); //try to subtract another 1 from the input value leaving 1 of this item
+
+    //final subtraction should cause the entire product to be removed
+    await user.click(buttons[1]); //try to subtract another 1 from the input value leaving none of this item
+
+    articles = getAllByRole("article");
+    expect(articles.length).toBe(1);
+
+    expect(cartSummary.textContent).toBe(
+      `Subtotal (3 items): $${products[0].price * 3}`
+    );
+  });
 });

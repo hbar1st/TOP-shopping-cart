@@ -285,7 +285,7 @@ export default function UpdateCart({
       )}
       <div className="inc-dec">
         <button
-          disabled={remainingStockOfProduct < 1}
+          disabled={!cartDisplay && remainingStockOfProduct < 1}
           type="button"
           aria-label="add 1"
           onClick={() =>
@@ -304,7 +304,7 @@ export default function UpdateCart({
           <Plus aria-hidden tabIndex={-1} size={18} strokeWidth={2} />
         </button>
         <button
-          disabled={remainingStockOfProduct < 1}
+          disabled={!cartDisplay && remainingStockOfProduct < 1}
           type="button"
           aria-label="subtract 1"
           onClick={() =>
