@@ -103,7 +103,11 @@ function ProductCard({ type, product, cartItems, setCartItems, setShowModal }) {
 
       <h2>{product.title}</h2>
       <p>{`SKU # ${product.id}`}</p>
-      <div id="rating" aria-label={`product rating: ${product.rating} stars`}>
+      <div
+        id="rating"
+        data-testid="rating"
+        aria-label={`product rating: ${product.rating} stars`}
+      >
         <span aria-hidden="true">{product.rating}</span>
         {makeStars(product.rating)}
       </div>

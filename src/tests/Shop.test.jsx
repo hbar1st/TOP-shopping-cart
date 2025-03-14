@@ -1,19 +1,26 @@
 import { describe, it, expect, vi } from "vitest";
+import { within, render } from "@testing-library/react";
+import { RouterProvider, createMemoryRouter } from "react-router";
+import { screen } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 import Modal from "../components/Modal.jsx";
-import { within } from "@testing-library/react";
-
-import {
-  render,
-  fireEvent,
-  waitFor,
-  waitUntil,
-  act,
-} from "@testing-library/react";
-
-import { StaticRouter, RouterProvider, createMemoryRouter } from "react-router";
+import Nav from "../components/Modal.jsx";
 import routes from "../routes";
 
-import userEvent from "@testing-library/user-event";
+beforeAll(() => {
+  //we have to mock these because HTMLDialogElement is not supported yet by jsdom as of March 13, 2025
+  HTMLDialogElement.prototype.show = vi.fn(function mock() {
+    this.open = true;
+  });
+
+  HTMLDialogElement.prototype.showModal = vi.fn(function mock() {
+    this.open = true;
+  });
+
+  HTMLDialogElement.prototype.close = vi.fn(function mock() {
+    this.open = false;
+  });
+});
 
 describe("Shop page", () => {
   let products = [
@@ -120,6 +127,9 @@ describe("Shop page", () => {
     expect(input.max).toBe(`${stockNumber}`);
     expect(input.required).toBe(false);
     expect(input.value).toBe("");
+
+    const rating = within(article).getByTestId("rating");
+    expect(rating.textContent).toBe(`${products[0].rating.rate}`);
   });
 
   it("Product card display for out of stock item", async () => {
@@ -239,7 +249,7 @@ describe("Shop page", () => {
     expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
   });
 
-  it("Add To Cart check", async () => {
+  it("Add To Cart default amount", async () => {
     const user = userEvent.setup();
 
     // Give our mock only one product to avoid confusion when confirming the product card contents
@@ -255,26 +265,113 @@ describe("Shop page", () => {
       initialIndex: 0,
     });
     const { getByRole, getAllByRole } = render(
-      <RouterProvider router={router}></RouterProvider>
+      <RouterProvider router={router}>
+        <Nav cartItems={[products[0]]} />
+
+        <Modal onClose={() => {}} showModalObj={products[0]} />
+      </RouterProvider>
     );
 
     const links = getAllByRole("link");
     await user.click(links[2]); //goto the shop page
 
-    let article = getByRole("article");
+    const article = getByRole("article");
 
-    const buttons = within(article).getAllByRole("button");
+    let buttons = within(article).getAllByRole("button");
     expect(buttons.length).toBe(3);
     expect(buttons[2].textContent).toBe("Add to Cart");
 
     await user.click(buttons[2]); //attempt to add to the cart
+    const dialog = screen.getByTestId("modal");
+    expect(dialog.open).toBe(true);
+    const header = within(dialog).getByText("Added to cart:");
+    const image = within(dialog).getByAltText(
+      "Opna Women's Short Sleeve Moisture"
+    );
+    const desc = within(dialog).getByRole("group");
+    expect(desc.textContent).toBe(`Description${products[0].description}`);
+    buttons = within(dialog).getAllByRole("button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0].textContent).toBe("Go to cart");
+    expect(buttons[1].textContent).toBe("Continue Shopping");
+    const amount = within(dialog).getByText(`Amount: 1`);
+    await user.click(buttons[1]);
 
-    const modalHeaders = getAllByRole("heading");
-    console.log(modalHeaders[0].textContent);
-    expect(modalHeaders.length).toBe(1);
-    /* check this after the modal check
-    input = within(article).getByRole("spinbutton");
+    const input = within(article).getByRole("spinbutton");
     expect(input.value).toBe("");
-    */
+    const shortStockMsg = within(article).getByTestId("shortStockMsg");
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
+    const regex = /Only (?<number>\d+) available/i;
+    const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
+    expect(stockNumber).toBe(`2`); //we started out with 3, then added one to cart, so should have 2 now
+
+    buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+
+    expect(buttons[2].textContent).toBe("Add to Cart");
+    expect(buttons[2].disabled).toBe(false);
+  });
+
+  it("Add To Cart inputed amount", async () => {
+    const user = userEvent.setup();
+
+    // Give our mock only one product to avoid confusion when confirming the product card contents
+    // and ensure the stock is more than zero
+    vi.spyOn(Math, "random").mockReturnValue(0.5); //this will give us 3 items in stock
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve([products[0]]),
+      })
+    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    const { getByRole, getAllByRole } = render(
+      <RouterProvider router={router}>
+        <Nav cartItems={[products[0]]} />
+
+        <Modal onClose={() => {}} showModalObj={products[0]} />
+      </RouterProvider>
+    );
+
+    const links = getAllByRole("link");
+    await user.click(links[2]); //goto the shop page
+
+    const article = getByRole("article");
+
+    const input = within(article).getByRole("spinbutton");
+    await user.type(input, "3");
+    let buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[2].textContent).toBe("Add to Cart");
+
+    await user.click(buttons[2]); //attempt to add to the cart
+    const dialog = screen.getByTestId("modal");
+    expect(dialog.open).toBe(true);
+    const header = within(dialog).getByText("Added to cart:");
+    const image = within(dialog).getByAltText(
+      "Opna Women's Short Sleeve Moisture"
+    );
+    const desc = within(dialog).getByRole("group");
+    expect(desc.textContent).toBe(`Description${products[0].description}`);
+    buttons = within(dialog).getAllByRole("button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0].textContent).toBe("Go to cart");
+    expect(buttons[1].textContent).toBe("Continue Shopping");
+    const amount = within(dialog).getByText(`Amount: 3`);
+    await user.click(buttons[1]);
+
+    expect(input.value).toBe("");
+    const shortStockMsg = within(article).getByTestId("shortStockMsg");
+    expect("hidden").toBeOneOf(Object.values(shortStockMsg.classList));
+    const regex = /Only (?<number>\d+) available/i;
+    const stockNumber = shortStockMsg.textContent.match(regex).groups.number;
+    expect(stockNumber).toBe(`0`); //we started out with 3, then added one to cart, so should have 2 now
+    buttons = within(article).getAllByRole("button");
+    expect(buttons.length).toBe(3);
+
+    expect(buttons[2].textContent).toBe("Add to Cart");
+    expect(buttons[2].disabled).toBe(true);
   });
 });

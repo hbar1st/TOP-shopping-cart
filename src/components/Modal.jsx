@@ -19,9 +19,8 @@ export default function Modal({ showModalObj, onClose }) {
       ref.current?.close();
     }
   }, [showModalObj]);
-
   return (
-    <dialog aria-modal="true" ref={ref} onCancel={onClose}>
+    <dialog data-testid="modal" aria-modal="true" ref={ref} onCancel={onClose}>
       <div>
         <div>
           <h2>Added to cart:</h2>
@@ -33,7 +32,7 @@ export default function Modal({ showModalObj, onClose }) {
                 <summary>Description</summary>
                 {showModalObj.description}
               </details>
-              <p>Amount: {showModalObj.amt}</p>
+              <p>{`Amount: ${showModalObj.amt}`}</p>
               <Link to="/cart">
                 <button>Go to cart</button>
               </Link>

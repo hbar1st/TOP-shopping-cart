@@ -24,7 +24,7 @@ function Cart() {
     );
   });
 
-  const total = cartItems.reduce((acc, el) => acc + el.price, 0).toFixed(2);
+  const total = cartItems.reduce((acc, el) => acc + (el.price * el.amt), 0).toFixed(2);
 
   useEffect(() => {
     if (total > 0) {
@@ -39,7 +39,7 @@ function Cart() {
     <div id="cart-page" aria-flowto="checkout">
       <div id="cart">
         <header>
-          <h2>Shopping Cart</h2>
+          <h1>Shopping Cart</h1>
         </header>
         {cartItems.length > 0 ? (
           <div className="cart-items-container">{productCards}</div>
@@ -49,7 +49,7 @@ function Cart() {
       </div>
 
       {cartItems.length > 0 && (
-        <div ref={buttonPanelRef} className="button-panel" id="checkout">
+        <div ref={buttonPanelRef} className="button-panel" id="checkout" data-testid="checkout" >
           <p>
             Subtotal ({cartItems.reduce((acc, el) => acc + el.amt, 0)} items): $
             {total}

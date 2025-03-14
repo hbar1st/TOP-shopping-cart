@@ -14,7 +14,7 @@ function App() {
     <>
       <Nav cartItems={cartItems} />
       <Navigate to="/home" replace />
-      <main>
+      <main aria-live="polite">
         <Outlet
           context={{
             cartItems,

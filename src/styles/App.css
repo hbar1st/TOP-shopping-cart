@@ -401,6 +401,10 @@ dialog::backdrop {
 
   > header {
     color: black;
+    
+    > h1 {
+      font-size: 2rem;
+    }
   }
   & div {
     background-color: white;
@@ -444,6 +448,11 @@ dialog::backdrop {
 
   > p:first-child {
     font-size: 1.3rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    justify-self: flex-start;
   }
 }
 
