@@ -12,6 +12,7 @@ body {
 body,
 #root {
   width: 100dvw;
+  box-sizing: border-box;
 }
 li {
   list-style: none;
@@ -294,6 +295,7 @@ h2 {
 
 .hidden {
   opacity: 0;
+  width: 1px;
 }
 
 button:disabled {

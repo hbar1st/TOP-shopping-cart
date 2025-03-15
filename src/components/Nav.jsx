@@ -24,7 +24,6 @@ function Nav({ cartItems }) {
         <span aria-hidden>n</span>
         <span
           className="hidden"
-          aria-hidden
           aria-description="logo and home page link"
         >
           Hanazon
