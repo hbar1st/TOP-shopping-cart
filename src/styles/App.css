@@ -116,6 +116,10 @@ main {
 
 .shop#main {
   flex-direction: column;
+
+  h1 {
+    font-size: calc(1em + 1vw);
+  }
 }
 
 #main {
