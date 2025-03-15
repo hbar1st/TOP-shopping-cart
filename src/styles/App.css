@@ -368,8 +368,7 @@ dialog {
         justify-content: space-between;
 
         > img {
-          margin: 1rem;
-          width: 50%;
+          width: calc(50% - 2rem);
           aspect-ratio: 3 / 4;
           align-self: center;
         }
@@ -403,7 +402,7 @@ dialog::backdrop {
 
   > header {
     color: black;
-    
+
     > h1 {
       font-size: 2rem;
     }
