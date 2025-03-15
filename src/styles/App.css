@@ -175,7 +175,9 @@ main {
   grid-template-columns: auto;
 
   > img {
-    max-width: 100%;
+    max-width: 80%;
+    margin: 5px;
+    justify-self: center;
     aspect-ratio: 2/2.3;
   }
   > #rating {
