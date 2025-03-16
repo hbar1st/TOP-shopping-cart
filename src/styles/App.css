@@ -301,9 +301,11 @@ h2 {
 
 .hidden {
   opacity: 0;
-  width: 1px;
 }
 
+.small {
+  width: 1px;
+}
 button:disabled {
   background-color: gray;
   pointer-events: none;
