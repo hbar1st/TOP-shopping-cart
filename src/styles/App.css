@@ -480,6 +480,7 @@ dialog::backdrop {
 
 .inc-dec {
   width: min-content;
+  height: fit-content;
   aspect-ratio: 1;
   margin-right: 1rem;
   display: flex;
