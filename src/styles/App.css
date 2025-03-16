@@ -180,6 +180,7 @@ main {
 
   > img {
     max-width: 80%;
+    width: 80%;
     margin: 5px;
     justify-self: center;
     aspect-ratio: 2/2.3;
