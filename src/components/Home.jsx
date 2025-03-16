@@ -60,7 +60,7 @@ function Home() {
       <NavLink to="/shop">
         <div
           aria-label="slideshow"
-          aria-live="false"
+          aria-live="off"
           aria-description="Hanazon poster slideshow"
           className="poster-frame"
           ref={posterSliderRef}

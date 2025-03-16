@@ -73,7 +73,7 @@ nav {
   position: sticky;
   top: 0;
   overflow: hidden;
-  background: #1d263a;
+  background: var(--background-color);
   z-index: 2;
 }
 
