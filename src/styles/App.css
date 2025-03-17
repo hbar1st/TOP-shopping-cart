@@ -8,10 +8,11 @@
 
 body {
   position: relative;
+  justify-content: center;
 }
 body,
 #root {
-  width: 100dvw;
+  max-width: 100dvw;
   box-sizing: border-box;
 }
 li {
